@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Find a trip</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='search.js') }}" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Find your trip</h1>
+      <p>Enter one or more filters. Leave fields empty to ignore them. {{ loaded_count }} trips available.</p>
+    </header>
+    <form method="get" action="/">
+      {% for name, label, placeholder, options, field_type in fields %}
+        {% if field_type == 'radio' %}
+          <fieldset class="radio-field">
+            <legend>{{ label }}</legend>
+            <div class="radio-options">
+              {% for option in options %}
+                <label class="radio-option">
+                  <input type="radio" name="{{ name }}" value="{{ option }}"
+                    {% if values.get(name) == option %}checked{% endif %}>
+                  {% if name == 'refundable' %}
+                    {{ 'Refundable' if option == 'TRUE' else 'Non-refundable' }}
+                  {% elif name == 'changeable' %}
+                    {{ 'Changeable' if option == 'TRUE' else 'Unchangeable' }}
+                  {% endif %}
+                </label>
+              {% endfor %}
+            </div>
+          </fieldset>
+        {% elif field_type == 'select' %}
+        <label>{{ label }}
+          <select name="{{ name }}" multiple>
+            <option value="">Select...</option>
+            {% for option in options %}
+              <option value="{{ option }}" {% if option in values.get(name, []) %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        {% else %}
+        <label>{{ label }}
+          <input type="text" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">
+        </label>
+        {% endif %}
+      {% endfor %}
+      <div class="actions"><button id="search-button" type="submit">Search trips</button><a class="clear" href="/">Clear filters</a></div>
+    </form>
+
+    {% if errors %}
+    <div class="notice error"><ul>
+      {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+    </ul></div>
+    {% endif %}
+
+    {% if results is not none and not errors %}
+      {% if results %}
+    <section>
+      <h2>{{ results|length }} trip(s) found</h2>
+      <div class="table-wrap"><table><thead><tr>
+        <th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
+        <th>Departs</th><th>Arrives</th><th>Price</th><th>Transfers</th><th>Rating</th>
+      </tr></thead><tbody>
+        {% for trip in results %}
+        <tr>
+          <td>{{ trip.trip_id }}</td>
+          <td>{{ trip.trip_company }}</td>
+          <td>{{ trip.trip_destination }}</td>
+          <td>{{ trip.trip_date.isoformat() }}</td>
+          <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
+          <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
+          <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
+          <td>{{ trip.transfers }}</td>
+          <td>{{ '%.1f'|format(trip.customer_rating) }}/5</td>
+        </tr>
+        {% endfor %}
+      </tbody></table></div>
+    </section>
+      {% else %}
+    <div class="notice">No trips match those filters. Try changing or clearing some fields.</div>
+      {% endif %}
+    {% endif %}
+  </main>
+</body>
+</html>

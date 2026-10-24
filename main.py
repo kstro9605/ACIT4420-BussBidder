@@ -6,11 +6,9 @@ VALID_COMPANIES = {"SolRuta", "Camino Express", "CostaLink", "VerdeBus", "NocheV
 VALID_DESTINATIONS = {"Barcelona", "Madrid", "Valencia", "Seville", "Bilbao", "Granada", "Malaga", "Zaragoza", "Alicante", "Cordoba", "Toledo", "Cadiz", "San Sebastian", "Santiago de Compostela", "Salamanca", "Murcia"}
 
 def Main():
-    trips,errors = load_trips("trips.csv")
-    print(f"Loaded {len(trips)} trips with {len(errors)} errors.")
-    print("Errors:")
-    for error in errors:
-        print(f"  {error}")
+    from webInterface import run_web_interface
+
+    run_web_interface()
 
 
 def parse_bool(value):
