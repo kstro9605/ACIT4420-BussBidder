@@ -74,8 +74,8 @@ class TripPlanner():
             results = [trip for trip in results if trip.seats_available >= number_of_seats]
         if arrival_date is not None:
             print("Arrival date filter applied")
-            print(f"Filtering trips for arrival date: {arrival_date}")
-            results = [trip for trip in results if trip.arrival_date == arrival_date]
+            trip_date = date.fromisoformat(arrival_date)
+            results = [trip for trip in results if trip.arrival_date == trip_date]
         if arrival_date_from is not None:
             results = [trip for trip in results if trip.arrival_date >= arrival_date_from]
         if arrival_date_to is not None:
