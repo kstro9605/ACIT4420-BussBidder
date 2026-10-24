@@ -50,6 +50,23 @@ label {
   font-weight: 600;
 }
 
+.field-group {
+  display: grid;
+  gap: 6px;
+}
+
+.date-range,
+.time-range {
+  display: inline;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.date-range[hidden],
+.time-range[hidden] {
+  display: none;
+}
+
 fieldset.radio-field {
   min-width: 0;
   margin: 0;
@@ -141,6 +158,24 @@ section,
 
 .table-wrap {
   overflow-x: auto;
+}
+
+.flexible-check {
+  display: flex;
+  align-items: center;
+  color: #4d9b82;
+  font-weight: 600;
+}
+
+.flexible-check label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.flexible-check input {
+  width: auto;
+  margin: 0;
 }
 
 table {

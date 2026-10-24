@@ -34,11 +34,40 @@ searchForm.addEventListener("change", (event) => {
   }
 });
 
+searchForm.querySelectorAll(".flexible-toggle").forEach((toggle) => {
+  const fieldGroup = toggle.closest(".field-group");
+  const fixedField = fieldGroup.querySelector(".fixed-date, .fixed-time");
+  const range = fieldGroup.querySelector(".date-range, .time-range");
+  const rangeInputs = range.querySelectorAll("input");
+
+  function updateFields() {
+    fixedField.disabled = toggle.checked;
+    fixedField.hidden = toggle.checked;
+    range.hidden = !toggle.checked;
+    rangeInputs.forEach((input) => {
+      input.disabled = !toggle.checked;
+    });
+    updateSearchButton();
+  }
+
+  toggle.addEventListener("change", updateFields);
+  updateFields();
+});
+
 function updateSearchButton() {
   const hasFilters = [...searchForm.querySelectorAll("input, select")]
-    .some((field) =>
-      field.type === "radio" ? field.checked : field.value.trim() !== ""
-    );
+    .some((field) => {
+      if (field.disabled) {
+        return false;
+      }
+      if (field.type === "radio" || field.type === "checkbox") {
+        return field.checked;
+      }
+      if (field instanceof HTMLSelectElement && field.multiple) {
+        return [...field.selectedOptions].some((option) => option.value.trim() !== "");
+      }
+      return field.value.trim() !== "";
+    });
   searchButton.textContent = hasFilters ? "Search trips" : "Display all trips";
 }
 

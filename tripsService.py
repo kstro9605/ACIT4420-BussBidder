@@ -34,9 +34,13 @@ class TripPlanner():
         self.trips.extend(trips)
 
 
-    def find_trips(self, companies=None, destinations=None, desired_date=None, max_price=None, min_rating=None, 
+    def find_trips(self, companies=None, destinations=None, desired_date=None, desired_date_from=None,
+                   desired_date_to=None, max_price=None, min_rating=None,
                    max_transfers=None, number_of_seats=None, arrival_date=None, departure_time=None, 
-                   arrival_time=None, luggage_allowance=None, changeable=None, refundable=None, environmental_impact=None):
+                   arrival_date_from=None, arrival_date_to=None,
+                   departure_time_from=None, departure_time_to=None,
+                   arrival_time=None, arrival_time_from=None, arrival_time_to=None, luggage_allowance=None,
+                   changeable=None, refundable=None, environmental_impact=None):
         results = self.trips
         if companies:
             print("Company filter applied")
@@ -52,6 +56,10 @@ class TripPlanner():
             print("Date filter applied")
             trip_date = date.fromisoformat(desired_date)
             results = [trip for trip in results if trip.trip_date == trip_date]
+        if desired_date_from is not None:
+            results = [trip for trip in results if trip.trip_date >= desired_date_from]
+        if desired_date_to is not None:
+            results = [trip for trip in results if trip.trip_date <= desired_date_to]
         if max_price is not None:
             print("Max price filter applied")
             results = [trip for trip in results if trip.trip_price <= max_price]
@@ -66,13 +74,26 @@ class TripPlanner():
             results = [trip for trip in results if trip.seats_available >= number_of_seats]
         if arrival_date is not None:
             print("Arrival date filter applied")
+            print(f"Filtering trips for arrival date: {arrival_date}")
             results = [trip for trip in results if trip.arrival_date == arrival_date]
+        if arrival_date_from is not None:
+            results = [trip for trip in results if trip.arrival_date >= arrival_date_from]
+        if arrival_date_to is not None:
+            results = [trip for trip in results if trip.arrival_date <= arrival_date_to]
         if departure_time is not None:
             print("Departure time filter applied")
             results = [trip for trip in results if trip.departure_time == departure_time]
+        if departure_time_from is not None:
+            results = [trip for trip in results if trip.departure_time >= departure_time_from]
+        if departure_time_to is not None:
+            results = [trip for trip in results if trip.departure_time <= departure_time_to]
         if arrival_time is not None:
             print("Arrival time filter applied")
             results = [trip for trip in results if trip.arrival_time == arrival_time]
+        if arrival_time_from is not None:
+            results = [trip for trip in results if trip.arrival_time >= arrival_time_from]
+        if arrival_time_to is not None:
+            results = [trip for trip in results if trip.arrival_time <= arrival_time_to]
         if luggage_allowance is not None:
             print("Luggage allowance filter applied")
             results = [trip for trip in results if trip.luggage_allowance >= luggage_allowance]

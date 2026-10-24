@@ -41,14 +41,36 @@
             {% endfor %}
           </select>
         </label>
-        {% elif field_type == 'date' %}
-        <label>{{ label }}
-          <input type="date" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">
-        </label>
-        {% elif field_type == 'time' %} 
-        <label>{{ label }}
-          <input type="time" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">
-        </label>
+        {% elif field_type in ('date', 'time') %}
+          <div class="field-group">
+            <label for="{{ name }}">{{ label }}</label>
+
+            <input class="fixed-{{ field_type }}" id="{{ name }}"
+                  type="{{ field_type }}" name="{{ name }}"
+                  value="{{ values.get(name, '') }}">
+
+            <div class="{{ field_type }}-range"
+                {% if values.get(name ~ '_is_flexible') != 'TRUE' %}hidden{% endif %}>
+              <label for="{{ name }}_from">From
+                <input type="{{ field_type }}" id="{{ name }}_from" name="{{ name }}_from"
+                      value="{{ values.get(name ~ '_from', '') }}"
+                      {% if values.get(name ~ '_is_flexible') != 'TRUE' %}disabled{% endif %}>
+              </label>
+              <label for="{{ name }}_to">To
+                <input type="{{ field_type }}" id="{{ name }}_to" name="{{ name }}_to"
+                      value="{{ values.get(name ~ '_to', '') }}"
+                      {% if values.get(name ~ '_is_flexible') != 'TRUE' %}disabled{% endif %}>
+              </label>
+            </div>
+            <div class="flexible-check">
+              <label for="{{ name }}_is_flexible">
+                <input class="flexible-toggle" id="{{ name }}_is_flexible"
+                      type="checkbox" name="{{ name }}_is_flexible" value="TRUE"
+                      {% if values.get(name ~ '_is_flexible') == 'TRUE' %}checked{% endif %}>
+                Flexible {{ field_type }} range
+              </label>
+            </div>
+          </div>
         {% else %}
         <label>{{ label }}
           <input type="text" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">

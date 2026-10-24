@@ -36,10 +36,39 @@ def _parse_search(values):
             for value in values.get(name, [])
             if value.strip()
         ]
-        if not raw_values:
+        if not raw_values and field_type not in ("date", "time"):
             continue
 
         try:
+            if field_type in ("date", "time"):
+                
+                is_flexible = (
+                    values.get(f"{name}_is_flexible", [""])[-1].lower() == "true"
+                )
+                if is_flexible:
+                    start_value = values.get(f"{name}_from", [""])[-1].strip()
+                    end_value = values.get(f"{name}_to", [""])[-1].strip()
+                    if not start_value or not end_value:
+                        raise ValueError(f"enter both the start and end {field_type}s")
+
+                    parse_value = date.fromisoformat if field_type == "date" else time.fromisoformat
+                    start = parse_value(start_value)
+                    end = parse_value(end_value)
+                    if start > end:
+                        raise ValueError(f"start {field_type} must be on or before end {field_type}")
+
+                    query[f"{name}_from"] = start
+                    query[f"{name}_to"] = end
+                    continue
+
+                if not raw_values:
+                    continue
+                raw_value = raw_values[-1]
+                parse_value = date.fromisoformat if field_type == "date" else time.fromisoformat
+                parse_value(raw_value)
+                query[name] = raw_value
+                continue
+
             if name == "company":
                 for company in raw_values:
                     if company not in VALID_COMPANIES:
@@ -53,12 +82,7 @@ def _parse_search(values):
                 query["destinations"] = raw_values
                 continue
             raw_value = raw_values[-1]
-            if name == "desired_date":
-                date.fromisoformat(raw_value)
-                query[name] = raw_value
-            elif name == "arrival_date":
-                query[name] = date.fromisoformat(raw_value)
-            elif name in ("departure_time", "arrival_time"):
+            if name in ("departure_time", "arrival_time"):
                 query[name] = time.fromisoformat(raw_value)
             elif name in ("max_price", "min_rating"):
                 query[name] = float(raw_value)
