@@ -7,19 +7,19 @@ from main import load_trips
 from tripsService import TripPlanner
 
 VALID_COMPANIES = {"SolRuta", "Camino Express", "CostaLink", "VerdeBus", "NocheVia"}
-VALID_DESTINATIONS = {"Barcelona", "Madrid", "Valencia", "Seville", "Bilbao", "Granada", "Malaga", "Zaragoza", "Alicante", "Cordoba", "Toledo", "Cadiz", "San Sebastian", "Santiago de Compostela", "Salamanca", "Murcia"}
+VALID_DESTINATIONS = {"Barcelona", "Valencia", "Seville", "Bilbao", "Granada", "Malaga", "Zaragoza", "Alicante", "Cordoba", "Toledo", "Cadiz", "San Sebastian", "Santiago de Compostela", "Salamanca", "Murcia"}
 
 FORM_FIELDS = (
     ("company", "Company", "e.g. SolRuta", list(VALID_COMPANIES),"select"),
     ("destination", "Destination", "e.g. Barcelona", list(VALID_DESTINATIONS),"select"),
-    ("desired_date", "Travel date", "YYYY-MM-DD", None,"text"),
+    ("desired_date", "Travel date", "YYYY-MM-DD", None,"date"),
     ("max_price", "Maximum price (EUR)", "e.g. 50", None,"text"),
     ("min_rating", "Minimum rating", "e.g. 4", None,"text"),
     ("max_transfers", "Maximum transfers", "e.g. 1", None,"text"),
     ("number_of_seats", "Seats needed", "e.g. 2", None,"text"),
-    ("arrival_date", "Arrival date", "YYYY-MM-DD", None,"text"),
-    ("departure_time", "Departure time", "HH:MM", None,"text"),
-    ("arrival_time", "Arrival time", "HH:MM", None,"text"),
+    ("arrival_date", "Arrival date", "YYYY-MM-DD", None,"date"),
+    ("departure_time", "Departure time", "HH:MM", None,"time"),
+    ("arrival_time", "Arrival time", "HH:MM", None,"time"),
     ("luggage_allowance", "Minimum luggage allowance (kg)", "e.g. 15", None,"text"),
     ("changeable", "Changes allowed", None, ["TRUE", "FALSE"], "radio"),
     ("refundable", "Refundability", None, ["TRUE", "FALSE"], "radio"),

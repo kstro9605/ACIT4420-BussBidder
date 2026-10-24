@@ -41,6 +41,14 @@
             {% endfor %}
           </select>
         </label>
+        {% elif field_type == 'date' %}
+        <label>{{ label }}
+          <input type="date" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">
+        </label>
+        {% elif field_type == 'time' %} 
+        <label>{{ label }}
+          <input type="time" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">
+        </label>
         {% else %}
         <label>{{ label }}
           <input type="text" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">
