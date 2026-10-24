@@ -3,7 +3,7 @@ from math import isfinite
 from pathlib import Path
 
 from flask import Flask, render_template, request
-from main import load_trips
+from dataLoader import load_trips
 from tripsService import TripPlanner
 
 VALID_COMPANIES = {"SolRuta", "Camino Express", "CostaLink", "VerdeBus", "NocheVia"}
