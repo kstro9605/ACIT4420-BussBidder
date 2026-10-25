@@ -16,7 +16,7 @@ class Hierarchy:
             for priority in self.priorities.values():
                 current_priority_score = priority.score(trip, payload)
                 score = score + current_priority_score
-            return_map.append((score, trip))
+            return_map.append((round(score,2), trip))
         return_map.sort(key=lambda item: item[0], reverse=True)
         return return_map
             

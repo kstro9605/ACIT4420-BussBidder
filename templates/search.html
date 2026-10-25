@@ -85,6 +85,9 @@
         {% endif %}
       {% endfor %}
       <div class="actions"><button id="search-button" type="submit">Search trips</button><a class="clear" href="/">Clear filters</a></div>
+      {% if session.get('user_email') %}
+      <button id="weighted-search-button" type="submit" name="search_mode" value="weighted">Search trips ranked by your priorities</button>
+      {% endif %}
     </form>
 
     {% if errors %}
@@ -95,29 +98,54 @@
 
     {% if results is not none and not errors %}
       {% if results %}
-    <section>
-      <h2>{{ results|length }} trip(s) found</h2>
-      <div class="table-wrap"><table><thead><tr>
-        <th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
-        <th>Departs</th><th>Arrives</th><th>Price</th><th>Transfers</th><th>Rating</th>
-      </tr></thead><tbody>
-        {% for trip in results %}
-        <tr>
-          <td>{{ trip.trip_id }}</td>
-          <td>{{ trip.trip_company }}</td>
-          <td>{{ trip.trip_destination }}</td>
-          <td>{{ trip.trip_date.isoformat() }}</td>
-          <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
-          <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
-          <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
-          <td>{{ trip.transfers }}</td>
-          <td>{{ '%.1f'|format(trip.customer_rating) }}/5</td>
-        </tr>
-        {% endfor %}
-      </tbody></table></div>
-    </section>
-      {% else %}
-    <div class="notice">No trips match those filters. Try changing or clearing some fields.</div>
+        {% if weighted_search %}
+          <section>
+            <h2>{{ results|length }} trip(s) found and ranked with your priorities in mind</h2>
+            <div class="table-wrap"><table><thead><tr>
+              <th>Score</th><th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
+              <th>Departs</th><th>Arrives</th><th>Price</th><th>Transfers</th><th>Rating</th>
+            </tr></thead><tbody>
+              {% for score,trip in results %}
+              <tr>
+                <td>{{ score }}</td>
+                <td>{{ trip.trip_id }}</td>
+                <td>{{ trip.trip_company }}</td>
+                <td>{{ trip.trip_destination }}</td>
+                <td>{{ trip.trip_date.isoformat() }}</td>
+                <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
+                <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
+                <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
+                <td>{{ trip.transfers }}</td>
+                <td>{{ '%.1f'|format(trip.customer_rating) }}/5</td>
+              </tr>
+              {% endfor %}
+            </tbody></table></div>
+          </section>
+        {% else %}
+      <section>
+        <h2>{{ results|length }} trip(s) found</h2>
+        <div class="table-wrap"><table><thead><tr>
+          <th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
+          <th>Departs</th><th>Arrives</th><th>Price</th><th>Transfers</th><th>Rating</th>
+        </tr></thead><tbody>
+          {% for trip in results %}
+          <tr>
+            <td>{{ trip.trip_id }}</td>
+            <td>{{ trip.trip_company }}</td>
+            <td>{{ trip.trip_destination }}</td>
+            <td>{{ trip.trip_date.isoformat() }}</td>
+            <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
+            <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
+            <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
+            <td>{{ trip.transfers }}</td>
+            <td>{{ '%.1f'|format(trip.customer_rating) }}/5</td>
+          </tr>
+          {% endfor %}
+        </tbody></table></div>
+      </section>
+      {% endif %}
+        {% else %}
+          <div class="notice">No trips match those filters. Try changing or clearing some fields.</div>
       {% endif %}
     {% endif %}
   </main>

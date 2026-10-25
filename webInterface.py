@@ -112,7 +112,6 @@ def _parse_search(values):
 
     return query, errors
 
-
 def _priority_form_data(user, submitted=None):
     submitted = submitted or {}
     has_submitted_data = bool(submitted)
@@ -166,7 +165,6 @@ def _priority_form_data(user, submitted=None):
         )
 
     return entries
-
 
 def _save_priority_form(user, form):
     errors = []
@@ -244,7 +242,6 @@ def _save_priority_form(user, form):
     user.set_hierarchy(hierarchy)
     return []
 
-
 def create_app(planner, loaded_count):
     app = Flask(__name__)
     app.secret_key = secrets.token_hex(32)
@@ -271,6 +268,7 @@ def create_app(planner, loaded_count):
     @app.get("/")
     def search_trips():
         values = request.args.to_dict(flat=False)
+        weighted_search = request.args.get("search_mode") == "weighted"
         if not values:
             return render_template(
                 "search.html",
@@ -279,10 +277,30 @@ def create_app(planner, loaded_count):
                 errors=[],
                 results=None,
                 loaded_count=loaded_count,
+                weighted_search=weighted_search,
             )
 
         query, errors = _parse_search(values)
         results = planner.find_trips(**query) if not errors else None
+
+        if weighted_search:
+            user = current_user()
+            weighted_results = user.hierarchy.score(results)
+            return (
+                render_template(
+                    "search.html",
+                    fields=FORM_FIELDS,
+                    values={
+                        name: entries if name in ("company", "destination") else entries[-1]
+                        for name, entries in values.items()
+                    },
+                    errors=errors,
+                    results=weighted_results,
+                    loaded_count=loaded_count,
+                    weighted_search=weighted_search,
+                ),
+                400 if errors else 200,
+            )
         
         return (
             render_template(
@@ -295,6 +313,7 @@ def create_app(planner, loaded_count):
                 errors=errors,
                 results=results,
                 loaded_count=loaded_count,
+                weighted_search=weighted_search,
             ),
             400 if errors else 200,
         )
