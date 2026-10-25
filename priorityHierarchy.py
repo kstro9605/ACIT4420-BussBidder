@@ -53,7 +53,7 @@ class Hierarchy:
             priority_type = priority_protoype["priority_type"]
             priority_weight = priority_protoype["priority_weight"]
 
-            priority_key = priority_type.field_name
+            priority_key = priority_type
             if priority_key in desired_priorities:
                 raise InvalidPriorityBundleException("Bundle of Priorities passed to Hierarchy is invalid and contain duplicate types of priorities")
 

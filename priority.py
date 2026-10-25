@@ -33,7 +33,14 @@ class Comparative(EvaluationMethod):
 
         if maximum == minimum:
             return 1.0
-        return (1 - ((offer-minimum) / (maximum - minimum)))*modifier
+
+        normalized = (offer - minimum) / (maximum - minimum)
+        #Customer rating is the exception to lower value is better so it needs to be calculated 
+        #Slightly different
+        if priority_type is PriorityType.CUSTOMER_RATING:
+            return normalized * modifier
+        
+        return (1 - normalized) * modifier
 
     def determine_min_max(self,dataset):
         if not dataset:
@@ -74,26 +81,28 @@ class Binary(EvaluationMethod):
                         return .4
                     case 3:
                         return 1
+            case _:
+                return 1.0
 
 
 class PriorityType(Enum):
-    LOWER_PRICE = "trip_price", Comparative
-    FEWER_TRANSFERS = "transfers", Comparative
-    DURATION = "duration", Comparative
+    LOWER_PRICE = "trip_price", Comparative, "lower_price"
+    FEWER_TRANSFERS = "transfers", Comparative, "fewer_transfers"
+    DURATION = "duration", Comparative, "duration"
+    ENVIRONMENTAL_IMPACT = "environmental_impact", Comparative, "environmental_impact"
 
-    DEPARTURE_BEFORE = "departure_time", Binary
-    DEPARTURE_AFTER = "departure_time", Binary
+    CUSTOMER_RATING = "customer_rating", Comparative, "customer_rating"
+    
+    DEPARTURE_BEFORE = "departure_time", Binary, "departure_before"
+    DEPARTURE_AFTER = "departure_time", Binary, "departure_after"
+    ARRIVAL_BEFORE = "arrival_time", Binary, "arrival_before"
+    ARRIVAL_AFTER = "arrival_time", Binary, "arrival_after"
+    FLEXIBLE = "flexible", Binary, "flexible"
 
-    ARRIVAL_BEFORE = "arrival_time", Binary
-    ARRIVAL_AFTER = "arrival_time", Binary
-
-    CUSTOMER_RATING = "customer_rating", Comparative
-    FLEXIBLE = "flexible", Binary
-    ENVIRONMENTAL_IMPACT = "environmental_impact", Binary
-
-    def __init__(self, field_name, evaluator_class):
+    def __init__(self, field_name, evaluator_class, key):
         self.field_name = field_name
         self.evaluator_class = evaluator_class
+        self.key = key
 
 class QualifierOperator(Enum):
     LESS_THAN = "less_than"
@@ -113,9 +122,15 @@ class Priority:
     weight: int
     qualifier: Qualifier | None = None
 
-    def set_qualifier(rule, limit):
-        qualifier = Qualifier(rule,limit)
-        self.qualifier = qualifier
+    def __init__(self, priority_type, weight, qualifier = None):
+        self.priority_type = priority_type
+        self.weight = weight
+
+        if priority_type in (PriorityType.DEPARTURE_BEFORE, PriorityType.DEPARTURE_AFTER, PriorityType.ARRIVAL_BEFORE, PriorityType.ARRIVAL_AFTER):
+            if qualifier is None:
+                raise MissingQualifierForTimeframe(f"Priority type: {priority_type} requires context of a Qualifier to adequately evaluate Trip quality")
+            else:
+                self.qualifier = qualifier
 
     def score(self, offer, dataset=None):
         field_name = self.priority_type.field_name
@@ -124,13 +139,31 @@ class Priority:
         if field_name == PriorityType.FLEXIBLE.field_name:
             flexibility = int(offer.refundable) + 2 * int(offer.changes_allowed)
             value = flexibility
-            return evaluator.score(value, self.priority_type, self.qualifier) * self.weight
+            return evaluator.score(
+                value,
+                self.priority_type,
+                qualifier=self.qualifier,
+            ) * self.weight
         else:
             value = getattr(offer,field_name)
             if dataset:
-                dataset_values = [getattr(item,field_name) for item in dataset]
-                return evaluator.score(value, self.priority_type,  dataset_values, self.qualifier) * self.weight
+                dataset_values = [
+                    item_value
+                    for item in dataset
+                    if (item_value := getattr(item, field_name)) is not None
+                ]
+                if value is None or not dataset_values:
+                    return 0.0
+                return evaluator.score(
+                    value,
+                    self.priority_type,
+                    dataset=dataset_values,
+                    qualifier=self.qualifier,
+                ) * self.weight
             else:
-                return evaluator.score(value, self.priority_type, self.qualifier) * self.weight
+                return evaluator.score(
+                    value,
+                    self.priority_type,
+                    qualifier=self.qualifier,
+                ) * self.weight
         
-

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Account | BussBidder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+
+<body>
+  <main class="account-page">
+    <header class="account-header">
+      <h1>Your BussBidder account</h1>
+      <p>Log in or create an account to manage your trip preferences.</p>
+      <a href="{{ url_for('search_trips') }}">Back to trip search</a>
+    </header>
+
+    {% if errors %}
+    <div class="notice error" role="alert"><ul>
+      {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+    </ul></div>
+    {% endif %}
+
+    <div class="account-grid">
+      <section class="account-card">
+        <h2>Log in</h2>
+        <form method="post" action="{{ url_for('account') }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="action" value="login">
+          <label for="login-email">Email
+            <input id="login-email" type="email" name="email" value="{{ values.get('email', '') }}" autocomplete="email" required>
+          </label>
+          <label for="login-password">Password
+            <input id="login-password" type="password" name="password" autocomplete="current-password" required>
+          </label>
+          <button type="submit">Log in</button>
+        </form>
+      </section>
+
+      <section class="account-card">
+        <h2>Create account</h2>
+        <form method="post" action="{{ url_for('account') }}">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="action" value="register">
+          <label for="register-name">Name
+            <input id="register-name" type="text" name="name" value="{{ values.get('name', '') }}" autocomplete="name" required>
+          </label>
+          <label for="register-email">Email
+            <input id="register-email" type="email" name="email" value="{{ values.get('email', '') }}" autocomplete="email" required>
+          </label>
+          <label for="register-password">Password (at least 8 characters)
+            <input id="register-password" type="password" name="password" minlength="8" autocomplete="new-password" required>
+          </label>
+          <button type="submit">Register</button>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

@@ -10,7 +10,14 @@
 <body>
   <main>
     <header>
-      <h1>Find your trip</h1>
+      <div style="display:flex">
+      <h1 style="display:flex">Find your trip</h1>
+      {% if session.get('user_email') %}
+      <a class="account-access" href="{{ url_for('manage_user') }}">Manage account</a>
+      {% else %}
+      <a class="account-access" href="{{ url_for('account') }}">Log in or create account</a>
+      {% endif %}
+      </div>
       <p>Enter one or more filters. Leave fields empty to ignore them. {{ loaded_count }} trips available.</p>
     </header>
     <form method="get" action="/">
