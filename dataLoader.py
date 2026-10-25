@@ -32,6 +32,8 @@ def row_to_trip_with_validation(row):
         arrival_date=date.fromisoformat(row["arrival_date"])
     except ValueError as e:
         raise ValueError(f"Invalid date, expected YYYY-MM-DD, Error: {e}")
+    if trip_date > arrival_date:
+        raise ValueError(f"Trip date {trip_date} is after the arrival date {arrival_date}. This trip is not possible")
     
     try:
         departure_time=time.fromisoformat(row["departure_time"])
@@ -50,11 +52,15 @@ def row_to_trip_with_validation(row):
         if row["price_euro"] == "":
             raise ValueError("Price is a mandatory field and cannot be empty.")
         price_euro=float(row["price_euro"])
+        if price_euro < 0:
+            raise ValueError("Price can not be a negative value.")
     except ValueError as e:
         raise ValueError(f"Invalid price data. Error: {e}")
     
     try:
         transfers=int(row["transfers"])
+        if transfers < 0:
+            raise ValueError("A negative number of transfers is impossible for a valid trip")
     except ValueError as e:
         raise ValueError(f"Invalid transfers data. Error: {e}")
     
@@ -64,9 +70,16 @@ def row_to_trip_with_validation(row):
         if row["transfer_via"].strip()
         else []
     )
+    # This is probably unneeded but if it is i can uncomment this
+    # on my generated dataset there are many locations not as a destination
+    #for location in transfer_locations:
+        #if location not in VALID_DESTINATIONS:
+            #raise ValueError("Transfer location is unknown and invalid in this system")
 
     try:
         luggage_allowance=int(row["luggage_allowance_kg"])
+        if luggage_allowance < 0:
+            raise ValueError("Luggage allowance must be positive")
     except ValueError as e:
         raise ValueError(f"Invalid luggage allowance data. Error: {e}")
     
@@ -76,11 +89,18 @@ def row_to_trip_with_validation(row):
 
     try:
         seats_available=int(row["available_seats"])
+        if seats_available <= 0:
+            ValueError("There needs to be at least 1 available seat for a trip to be valid")
     except ValueError as e:
         raise ValueError(f"Invalid seats available data. Error: {e}")
     
     try:
-        customer_rating=float(row["customer_rating"])
+        read_rating=float(row["customer_rating"])
+        rating_scale_max=float(row["rating_scale_max"])
+        if read_rating > rating_scale_max:
+            raise ValueError("Provided rating exceeded the provided scales max")
+        #I only want ratings on a scale to five
+        customer_rating = (read_rating/rating_scale_max)*5
     except ValueError as e:
         raise ValueError(f"Invalid customer rating data. Error: {e}")
     
@@ -90,6 +110,8 @@ def row_to_trip_with_validation(row):
             if row["environmental_measure_kg_co2e_per_passenger"].strip()
             else None
         )
+        if environmental_impact is not None and environmental_impact < 0:
+            raise ValueError("Environmental impact if given can not be a negative value")
     except ValueError as e:
         raise ValueError(f"Invalid environmental impact data. Error: {e}")
 

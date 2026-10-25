@@ -34,7 +34,6 @@ class TripPlanner():
     def add_trips(self, trips):
         self.trips.extend(trips)
 
-
     def find_trips(self, companies=None, destinations=None, desired_date=None, desired_date_from=None,
                    desired_date_to=None, max_price=None, min_rating=None,
                    max_transfers=None, number_of_seats=None, arrival_date=None, departure_time=None, 
@@ -109,10 +108,6 @@ class TripPlanner():
             results = [trip for trip in results if trip.environmental_impact == environmental_impact]   
         return results
 
-    def display_search_results(self, trips):
-        for trip in trips:
-            print(trip)
-
     def parse_search(self, values):
         query = {}
         errors = []
@@ -123,29 +118,28 @@ class TripPlanner():
             field_type = field[4]
             raw_values = [value.strip() for value in values.get(name, []) if value.strip()]
 
-            if field_type == "time":
-                start_value = values.get(f"{name}_from", [""])[-1].strip()
-                end_value = values.get(f"{name}_to", [""])[-1].strip()
-                if not start_value and not end_value:
-                    continue
 
-                try:
+            if not raw_values and field_type not in ("date","time"):
+                continue
+
+            try:
+                if field_type == "time":
+                    start_value = values.get(f"{name}_from", [""])[-1].strip()
+                    end_value = values.get(f"{name}_to", [""])[-1].strip()
+                    if not start_value and not end_value:
+                        continue
+
                     start = time.fromisoformat(start_value) if start_value else None
                     end = time.fromisoformat(end_value) if end_value else None
+                    
                     if start is not None and end is not None and start > end:
                         raise ValueError("start time must be on or before end time")
                     if start is not None:
                         query[f"{name}_from"] = start
                     if end is not None:
                         query[f"{name}_to"] = end
-                except ValueError as error:
-                    errors.append(f"{label}: {error}")
-                continue
-
-            if not raw_values and field_type != "date":
-                continue
-
-            try:
+                    continue
+                
                 if field_type == "date":
                     is_flexible = (values.get(f"{name}_is_flexible", [""])[-1].lower() == "true")
                     
@@ -177,28 +171,34 @@ class TripPlanner():
                             raise ValueError(f"Invalid company: {company}.")
                     query["companies"] = raw_values
                     continue
+
                 if name == "destination":
                     for destination in raw_values:
                         if destination not in VALID_DESTINATIONS:
                             raise ValueError(f"Invalid destination: {destination}.")
                     query["destinations"] = raw_values
                     continue
+
                 raw_value = raw_values[-1]
                 if name in ("max_price", "min_rating"):
                     query[name] = float(raw_value)
                     if query[name] < 0:
                         raise ValueError("must be zero or greater")
+                    
                 elif name in ("max_transfers", "number_of_seats", "luggage_allowance"):
                     query[name] = int(raw_value)
                     if query[name] < 0:
                         raise ValueError("must be zero or greater")
+                    
                 elif name in ("changeable", "refundable"):
                     normalized = raw_value.lower()
                     if normalized not in ("true", "false"):
                         raise ValueError("enter true or false")
                     query[name] = normalized == "true"
+
                 else:
                     query[name] = raw_value
+
             except ValueError as error:
                 errors.append(f"{label}: {error}")
 
