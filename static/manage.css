@@ -1,0 +1,288 @@
+.manage-page {
+  max-width: 96%;
+}
+
+.management-layout {
+  display: flex;
+  align-items: flex-start;
+}
+
+.manage-card,
+.manage-priority-card {
+  min-width: 0;
+  margin: 12px;
+}
+
+.manage-card {
+  max-width: 35%;
+  max-height: 18%;
+  padding: 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.manage-priority-card {
+  flex: 1;
+}
+
+.profile-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  padding: 0;
+  border: 0;
+}
+
+.manage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.manage-header form {
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.secondary-button {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.weight-summary {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+  font-weight: 600;
+}
+
+.weight-summary progress {
+  width: 100%;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.manage-priority-card > form {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+.priority-builder {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.7fr) minmax(0, 1.5fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.priority-palette,
+.chart-panel,
+.priority-dropzone {
+  padding: 16px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.priority-palette h3 {
+  margin-top: 0;
+}
+
+.priority-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  cursor: grab;
+}
+
+.priority-option:active {
+  cursor: grabbing;
+}
+
+.priority-option button,
+.remove-priority {
+  flex: none;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.priority-workspace {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.priority-chart {
+  display: grid;
+  width: min(230px, 70vw);
+  aspect-ratio: 1;
+  margin: 0 auto 16px;
+  place-items: center;
+  background: conic-gradient(var(--priority-chart-segments, transparent 0deg 360deg));
+  border-radius: 50%;
+}
+
+.priority-chart-center {
+  display: flex;
+  width: 56%;
+  aspect-ratio: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: 50%;
+  text-align: center;
+}
+
+.priority-chart-center output {
+  color: var(--heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.priority-chart-center span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.priority-dropzone {
+  display: grid;
+  gap: 12px;
+  min-height: 100px;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.priority-dropzone.is-drop-target {
+  border-color: var(--accent);
+  background: var(--accent-highlight);
+}
+
+.priority-chart.is-drop-target {
+  outline: 4px solid var(--border-strong);
+  outline-offset: 4px;
+}
+
+.priority-dropzone > [hidden],
+.priority-option[hidden],
+.priority-card[hidden],
+[data-empty-state][hidden] {
+  display: none;
+}
+
+.priority-empty-state {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.priority-card {
+  min-width: 0;
+  margin: 0;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.priority-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.priority-card-heading h4 {
+  margin: 0;
+  color: var(--heading);
+}
+
+.weight-controls {
+  display: grid;
+  grid-template-columns: auto minmax(60px, 1fr) 76px auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.weight-controls label {
+  display: block;
+  white-space: nowrap;
+}
+
+.weight-controls input[type="range"] {
+  width: 100%;
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+.weight-controls input[type="number"] {
+  padding: 6px;
+}
+
+.weight-controls > span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.qualifier-controls {
+  margin-top: 12px;
+}
+
+.qualifier-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qualifier-toggle input {
+  width: auto;
+  margin: 0;
+}
+
+.qualifier-fields {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.qualifier-fields[hidden] {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .manage-header {
+    flex-direction: column;
+  }
+
+  .management-layout {
+    flex-direction: column;
+  }
+
+  .manage-card,
+  .manage-priority-card {
+    width: auto;
+    max-width: none;
+  }
+
+  .manage-card {
+    padding: 16px;
+  }
+
+  .priority-builder {
+    grid-template-columns: 1fr;
+  }
+
+  .weight-controls {
+    grid-template-columns: auto minmax(55px, 1fr) 68px auto;
+    gap: 6px;
+  }
+}

@@ -1,4 +1,5 @@
 from datetime import date, time
+from constants import FORM_FIELDS, VALID_COMPANIES, VALID_DESTINATIONS
 
 class Trip():
     def __init__(self, trip_id, trip_company, trip_destination, trip_date, arrival_date, departure_time, arrival_time, duration_minutes, price_euro, transfers, transfer_locations, luggage_allowance, changeable, refundable, seats_available, customer_rating, environmental_impact):
@@ -111,3 +112,94 @@ class TripPlanner():
     def display_search_results(self, trips):
         for trip in trips:
             print(trip)
+
+    def parse_search(self, values):
+        query = {}
+        errors = []
+        
+        for field in FORM_FIELDS:
+            name = field[0]
+            label = field[1]
+            field_type = field[4]
+            raw_values = [value.strip() for value in values.get(name, []) if value.strip()]
+
+            if field_type == "time":
+                start_value = values.get(f"{name}_from", [""])[-1].strip()
+                end_value = values.get(f"{name}_to", [""])[-1].strip()
+                if not start_value and not end_value:
+                    continue
+
+                try:
+                    start = time.fromisoformat(start_value) if start_value else None
+                    end = time.fromisoformat(end_value) if end_value else None
+                    if start is not None and end is not None and start > end:
+                        raise ValueError("start time must be on or before end time")
+                    if start is not None:
+                        query[f"{name}_from"] = start
+                    if end is not None:
+                        query[f"{name}_to"] = end
+                except ValueError as error:
+                    errors.append(f"{label}: {error}")
+                continue
+
+            if not raw_values and field_type != "date":
+                continue
+
+            try:
+                if field_type == "date":
+                    is_flexible = (values.get(f"{name}_is_flexible", [""])[-1].lower() == "true")
+                    
+                    if is_flexible:
+                        start_value = values.get(f"{name}_from", [""])[-1].strip()
+                        end_value = values.get(f"{name}_to", [""])[-1].strip()
+                        if not start_value or not end_value:
+                            raise ValueError(f"enter both the start and end {field_type}s")
+
+                        start = date.fromisoformat(start_value)
+                        end = date.fromisoformat(end_value)
+                        if start > end:
+                            raise ValueError(f"start {field_type} must be on or before end {field_type}")
+
+                        query[f"{name}_from"] = start
+                        query[f"{name}_to"] = end
+                        continue
+
+                    if not raw_values:
+                        continue
+                    raw_value = raw_values[-1]
+                    date.fromisoformat(raw_value)
+                    query[name] = raw_value
+                    continue
+
+                if name == "company":
+                    for company in raw_values:
+                        if company not in VALID_COMPANIES:
+                            raise ValueError(f"Invalid company: {company}.")
+                    query["companies"] = raw_values
+                    continue
+                if name == "destination":
+                    for destination in raw_values:
+                        if destination not in VALID_DESTINATIONS:
+                            raise ValueError(f"Invalid destination: {destination}.")
+                    query["destinations"] = raw_values
+                    continue
+                raw_value = raw_values[-1]
+                if name in ("max_price", "min_rating"):
+                    query[name] = float(raw_value)
+                    if query[name] < 0:
+                        raise ValueError("must be zero or greater")
+                elif name in ("max_transfers", "number_of_seats", "luggage_allowance"):
+                    query[name] = int(raw_value)
+                    if query[name] < 0:
+                        raise ValueError("must be zero or greater")
+                elif name in ("changeable", "refundable"):
+                    normalized = raw_value.lower()
+                    if normalized not in ("true", "false"):
+                        raise ValueError("enter true or false")
+                    query[name] = normalized == "true"
+                else:
+                    query[name] = raw_value
+            except ValueError as error:
+                errors.append(f"{label}: {error}")
+
+        return query, errors

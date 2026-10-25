@@ -1,116 +1,17 @@
 from datetime import date, time
 from hmac import compare_digest
-from math import isfinite
 from pathlib import Path
 import secrets
-
+from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, session, url_for
+
+
 from dataLoader import load_trips
-from priority import Priority, PriorityType, Qualifier, QualifierOperator
+from priority import PriorityType, Qualifier, QualifierOperator
 from priorityHierarchy import Hierarchy
 from tripsService import TripPlanner
 from user import User
-from werkzeug.security import check_password_hash, generate_password_hash
-
-VALID_COMPANIES = {"SolRuta", "Camino Express", "CostaLink", "VerdeBus", "NocheVia"}
-VALID_DESTINATIONS = {"Barcelona", "Valencia", "Seville", "Bilbao", "Granada", "Malaga", "Zaragoza", "Alicante", "Cordoba", "Toledo", "Cadiz", "San Sebastian", "Santiago de Compostela", "Salamanca", "Murcia"}
-
-FORM_FIELDS = (
-    ("company", "Company", "e.g. SolRuta", list(VALID_COMPANIES),"select"),
-    ("destination", "Destination", "e.g. Barcelona", list(VALID_DESTINATIONS),"select"),
-    ("desired_date", "Travel date", "YYYY-MM-DD", None,"date"),
-    ("max_price", "Maximum price (EUR)", "e.g. 50", None,"text"),
-    ("min_rating", "Minimum rating", "e.g. 4", None,"text"),
-    ("max_transfers", "Maximum transfers", "e.g. 1", None,"text"),
-    ("number_of_seats", "Seats needed", "e.g. 2", None,"text"),
-    ("arrival_date", "Arrival date", "YYYY-MM-DD", None,"date"),
-    ("departure_time", "Departure time", "HH:MM", None,"time"),
-    ("arrival_time", "Arrival time", "HH:MM", None,"time"),
-    ("luggage_allowance", "Minimum luggage allowance (kg)", "e.g. 15", None,"text"),
-    ("changeable", "Changes allowed", None, ["TRUE", "FALSE"], "radio"),
-    ("refundable", "Refundability", None, ["TRUE", "FALSE"], "radio"),
-)
-
-
-def _parse_search(values):
-    query = {}
-    errors = []
-
-    for name, label, placeholder, options, field_type in FORM_FIELDS:
-        raw_values = [
-            value.strip()
-            for value in values.get(name, [])
-            if value.strip()
-        ]
-        if not raw_values and field_type not in ("date", "time"):
-            continue
-
-        try:
-            if field_type in ("date", "time"):
-                
-                is_flexible = (
-                    values.get(f"{name}_is_flexible", [""])[-1].lower() == "true"
-                )
-                if is_flexible:
-                    start_value = values.get(f"{name}_from", [""])[-1].strip()
-                    end_value = values.get(f"{name}_to", [""])[-1].strip()
-                    if not start_value or not end_value:
-                        raise ValueError(f"enter both the start and end {field_type}s")
-
-                    parse_value = date.fromisoformat if field_type == "date" else time.fromisoformat
-                    start = parse_value(start_value)
-                    end = parse_value(end_value)
-                    if start > end:
-                        raise ValueError(f"start {field_type} must be on or before end {field_type}")
-
-                    query[f"{name}_from"] = start
-                    query[f"{name}_to"] = end
-                    continue
-
-                if not raw_values:
-                    continue
-                raw_value = raw_values[-1]
-                parse_value = date.fromisoformat if field_type == "date" else time.fromisoformat
-                parse_value(raw_value)
-                query[name] = raw_value
-                continue
-
-            if name == "company":
-                for company in raw_values:
-                    if company not in VALID_COMPANIES:
-                        raise ValueError(f"Invalid company: {company}.")
-                query["companies"] = raw_values
-                continue
-            if name == "destination":
-                for destination in raw_values:
-                    if destination not in VALID_DESTINATIONS:
-                        raise ValueError(f"Invalid destination: {destination}.")
-                query["destinations"] = raw_values
-                continue
-            raw_value = raw_values[-1]
-            if name in ("departure_time", "arrival_time"):
-                query[name] = time.fromisoformat(raw_value)
-            elif name in ("max_price", "min_rating"):
-                query[name] = float(raw_value)
-                if not isfinite(query[name]):
-                    raise ValueError("must be a finite number")
-                if query[name] < 0:
-                    raise ValueError("must be zero or greater")
-            elif name in ("max_transfers", "number_of_seats", "luggage_allowance"):
-                query[name] = int(raw_value)
-                if query[name] < 0:
-                    raise ValueError("must be zero or greater")
-            elif name in ("changeable", "refundable"):
-                normalized = raw_value.lower()
-                if normalized not in ("true", "false"):
-                    raise ValueError("enter true or false")
-                query[name] = normalized == "true"
-            else:
-                query[name] = raw_value
-        except ValueError as error:
-            errors.append(f"{label}: {error}")
-
-    return query, errors
+from constants import *
 
 def _priority_form_data(user, submitted=None):
     submitted = submitted or {}
@@ -234,8 +135,6 @@ def _save_priority_form(user, form):
                     if priority_type.field_name in ("departure_time", "arrival_time")
                     else float(raw_value)
                 )
-                if isinstance(value, float) and not isfinite(value):
-                    raise ValueError("enter a finite number")
                 qualifier = Qualifier(QualifierOperator[operator_name], value)
             except ValueError as error:
                 errors.append(f"{name.replace('_', ' ').title()}: {error}.")
@@ -282,6 +181,11 @@ def create_app(planner, loaded_count):
         user = accounts.get(email) if email else None
         return accounts.get(email) if email else None
 
+    @app.context_processor
+    def inject_user_theme():
+        user = current_user()
+        return {"user_theme": user.theme if user else DEFAULT_THEME}
+
     @app.get("/")
     def search_trips():
         values = request.args.to_dict(flat=False)
@@ -297,7 +201,7 @@ def create_app(planner, loaded_count):
                 weighted_search=weighted_search,
             )
 
-        query, errors = _parse_search(values)
+        query, errors = planner.parse_search(values)
         results = planner.find_trips(**query) if not errors else None
 
         if weighted_search:
@@ -399,7 +303,11 @@ def create_app(planner, loaded_count):
 
         errors = []
         profile_errors = []
-        profile_values = {"name": user.name, "email": user.email}
+        profile_values = {
+            "name": user.name,
+            "email": user.email,
+            "theme": user.theme,
+        }
         priority_values = None
 
         if request.method == "POST":
@@ -412,11 +320,14 @@ def create_app(planner, loaded_count):
                 name = request.form.get("name", "").strip()
                 email = request.form.get("email", "").strip().lower()
                 new_password = request.form.get("new_password", "")
-                profile_values = {"name": name, "email": email}
+                theme = request.form.get("theme", DEFAULT_THEME)
+                profile_values = {"name": name, "email": email, "theme": theme}
                 if not name:
                     profile_errors.append("Enter your name.")
                 if "@" not in email or any(character.isspace() for character in email):
                     profile_errors.append("Enter a valid email address.")
+                if theme not in VALID_THEMES:
+                    profile_errors.append("Choose a valid page theme.")
                 if email != user.email and email in accounts:
                     profile_errors.append("An account with that email already exists.")
                 if new_password and len(new_password) < 8:
@@ -426,6 +337,7 @@ def create_app(planner, loaded_count):
                     user.name = name
                     user.email = email
                     user.username = email
+                    user.theme = theme
                     if new_password:
                         user.password = generate_password_hash(new_password)
                     accounts[email] = user
@@ -443,6 +355,7 @@ def create_app(planner, loaded_count):
             errors=errors,
             profile_errors=profile_errors,
             profile_values=profile_values,
+            theme_options=THEME_OPTIONS,
             total_weight=user.hierarchy.total_weight,
             csrf_token=csrf_token(),
         )
@@ -455,7 +368,6 @@ def create_app(planner, loaded_count):
         return redirect(url_for("account"))
 
     return app
-
 
 def run_web_interface(host="127.0.0.1", port=8000):
     csv_path = Path(__file__).resolve().parent / "data" / "trips.csv"
@@ -472,6 +384,3 @@ def run_web_interface(host="127.0.0.1", port=8000):
     app = create_app(planner, len(trips))
     
     app.run(host=host, port=port, threaded=True, use_reloader=False)
-
-if __name__ == "__main__":
-    run_web_interface()

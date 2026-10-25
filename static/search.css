@@ -1,0 +1,74 @@
+.account-access {
+  display: inline;
+  margin-left: 600px;
+  text-align: center;
+  align-content: last baseline;
+}
+
+.field-group {
+  display: grid;
+  gap: 6px;
+}
+
+.date-range,
+.time-range {
+  display: inline;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.date-range[hidden],
+.time-range[hidden] {
+  display: none;
+}
+
+fieldset.radio-field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.radio-field legend {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.radio-options {
+  display: flex;
+  gap: 16px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+}
+
+.radio-option input,
+.flexible-check input {
+  width: auto;
+  margin: 0;
+}
+
+.actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.flexible-check {
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.flexible-check label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Find a trip</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='search.css') }}">
   <script src="{{ url_for('static', filename='search.js') }}" defer></script>
 </head>
-<body>
+<body data-theme="{{ user_theme }}">
   <main>
     <header>
       <div style="display:flex">
@@ -48,7 +49,7 @@
             {% endfor %}
           </select>
         </label>
-        {% elif field_type in ('date', 'time') %}
+        {% elif field_type == 'date' %}
           <div class="field-group">
             <label for="{{ name }}">{{ label }}</label>
 
@@ -78,6 +79,17 @@
               </label>
             </div>
           </div>
+        {% elif field_type == "time" %}
+          <div class="{{ field_type }}-range">
+              <label for="{{ name }}_from">{{label}} From
+                <input type="{{ field_type }}" id="{{ name }}_from" name="{{ name }}_from"
+                      value="{{ values.get(name ~ '_from', '') }}">
+              </label>
+              <label for="{{ name }}_to">{{label}} To
+                <input type="{{ field_type }}" id="{{ name }}_to" name="{{ name }}_to"
+                      value="{{ values.get(name ~ '_to', '') }}">
+              </label>
+            </div>
         {% else %}
         <label>{{ label }}
           <input type="text" name="{{ name }}" value="{{ values.get(name, '') }}" placeholder="{{ placeholder }}">

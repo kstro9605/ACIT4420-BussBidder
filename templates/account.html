@@ -4,10 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Account | BussBidder</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='account.css') }}">
 </head>
 
-<body>
+<body data-theme="{{ user_theme }}">
   <main class="account-page">
     <header class="account-header">
       <h1>Your BussBidder account</h1>
