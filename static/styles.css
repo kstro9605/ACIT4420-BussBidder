@@ -176,12 +176,14 @@ button {
 }
 
 .manage-priority-card {
-  width: 65%;
+  flex: 1;
+  min-width: 0;
   margin: 12px;
 }
 
 .management-layout {
   display: flex;
+  align-items: flex-start;
 }
 
 
@@ -225,11 +227,122 @@ button {
   accent-color: #176b56;
 }
 
-.priority-list {
+.manage-priority-card > form {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+.priority-builder {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: minmax(190px, 0.7fr) minmax(0, 1.5fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.priority-palette,
+.chart-panel,
+.priority-dropzone {
+  padding: 16px;
+  border: 1px solid #dce7e2;
+  border-radius: 10px;
+  background: #fbfdfc;
+}
+
+.priority-palette h3 {
+  margin-top: 0;
+}
+
+.priority-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #cddbd5;
+  border-radius: 8px;
+  background: white;
+  cursor: grab;
+}
+
+.priority-option:active {
+  cursor: grabbing;
+}
+
+.priority-option button,
+.remove-priority {
+  flex: none;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.priority-workspace {
+  display: grid;
   gap: 14px;
-  margin-bottom: 20px;
+  min-width: 0;
+}
+
+.priority-chart {
+  display: grid;
+  width: min(230px, 70vw);
+  aspect-ratio: 1;
+  margin: 0 auto 16px;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(var(--priority-chart-segments, transparent 0deg 360deg));
+}
+
+.priority-chart-center {
+  display: flex;
+  width: 56%;
+  aspect-ratio: 1;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: white;
+  text-align: center;
+}
+
+.priority-chart-center output {
+  color: #14594b;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.priority-chart-center span {
+  color: #52645f;
+  font-size: 0.75rem;
+}
+
+.priority-dropzone {
+  display: grid;
+  gap: 12px;
+  min-height: 100px;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.priority-dropzone.is-drop-target {
+  border-color: #176b56;
+  background: #eaf5f0;
+}
+
+.priority-chart.is-drop-target {
+  outline: 4px solid #9bc9b5;
+  outline-offset: 4px;
+}
+
+.priority-dropzone > [hidden],
+.priority-option[hidden],
+.priority-card[hidden],
+[data-empty-state][hidden] {
+  display: none;
+}
+
+.priority-empty-state {
+  margin: 20px 0;
+  text-align: center;
 }
 
 .priority-card {
@@ -238,6 +351,47 @@ button {
   padding: 14px;
   border: 1px solid #dce7e2;
   border-radius: 9px;
+  background: white;
+}
+
+.priority-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.priority-card-heading h4 {
+  margin: 0;
+  color: #14594b;
+}
+
+.weight-controls {
+  display: grid;
+  grid-template-columns: auto minmax(60px, 1fr) 76px auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.weight-controls label {
+  display: block;
+  white-space: nowrap;
+}
+
+.weight-controls input[type="range"] {
+  width: 100%;
+  padding: 0;
+  accent-color: #176b56;
+}
+
+.weight-controls input[type="number"] {
+  padding: 6px;
+}
+
+.weight-controls > span {
+  color: #52645f;
+  font-size: 0.85rem;
 }
 
 .priority-card legend {
@@ -355,5 +509,24 @@ th {
 
   .manage-header {
     flex-direction: column;
+  }
+
+  .management-layout {
+    flex-direction: column;
+  }
+
+  .manage-card,
+  .manage-priority-card {
+    width: auto;
+    max-width: none;
+  }
+
+  .priority-builder {
+    grid-template-columns: 1fr;
+  }
+
+  .weight-controls {
+    grid-template-columns: auto minmax(55px, 1fr) 68px auto;
+    gap: 6px;
   }
 }

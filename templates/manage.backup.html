@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage account | BussBidder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <script src="{{ url_for('static', filename='manage.js') }}" defer></script>
+</head>
+<body>
+  <main class="manage-page">
+    <header class="manage-header">
+      <div>
+        <h1>Manage your preferences</h1>
+        <p>Update your account and build a trip-priority hierarchy.</p>
+      </div>
+      <form method="post" action="{{ url_for('logout') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+        <button class="secondary-button" type="submit">Log out</button>
+        <a href="{{ url_for('search_trips') }}">Back to trip search</a>
+      </form>
+    </header>
+
+    {% if profile_errors %}
+    <div class="notice error" role="alert"><ul>
+      {% for error in profile_errors %}<li>{{ error }}</li>{% endfor %}
+    </ul></div>
+    {% endif %}
+    {% if errors %}
+    <div class="notice error" role="alert"><ul>
+      {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+    </ul></div>
+    {% endif %}
+    <div class="management-layout">
+      <section class="manage-card">
+        <h2>Account information</h2>
+        <form method="post" action="{{ url_for('manage_user') }}" class="profile-form">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="action" value="profile">
+          <label for="profile-name">Name
+            <input id="profile-name" type="text" name="name" value="{{ profile_values.name }}" autocomplete="name" required>
+          </label>
+          <label for="profile-email">Email
+            <input id="profile-email" type="email" name="email" value="{{ profile_values.email }}" autocomplete="email" required>
+          </label>
+          <label for="new-password">New password (leave blank to keep current password)
+            <input id="new-password" type="password" name="new_password" minlength="8" autocomplete="new-password">
+          </label>
+          <button type="submit">Update account</button>
+        </form>
+      </section>
+
+      <section class="manage-priority-card ">
+        <h2>Trip priorities</h2>
+        <p>Select the priorities that matter to you, then assign their point weights. The total cannot exceed 100.</p>
+        <form method="post" action="{{ url_for('manage_user') }}" id="priority-form">
+          <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="action" value="priorities">
+          <div class="weight-summary">
+            <label for="weight-progress">Points assigned:
+              <output id="weight-total">{{ total_weight|int }}</output> / 100
+            </label>
+            <progress id="weight-progress" max="100" value="{{ total_weight }}"></progress>
+          </div>
+
+          <div class="priority-list">
+            {% for entry in priorities %}
+            {% set priority = entry.type %}
+            <fieldset class="priority-card" data-priority-row>
+              <legend>
+                <label class="priority-enable">
+                  <input type="checkbox" name="priority_type" value="{{ priority.name }}"
+                    {% if entry.selected %}checked{% endif %}>
+                  {{ priority.name.replace('_', ' ')|title }}
+                </label>
+              </legend>
+
+              <label for="weight-{{ priority.name }}">Weight:
+                <output data-weight-output>{{ entry.weight }}</output> points
+              </label>
+              <input id="weight-{{ priority.name }}" type="range" name="weight_{{ priority.name }}"
+                    min="0" max="100" value="{{ entry.weight }}" data-weight
+                    {% if not entry.selected %}disabled{% endif %}>
+
+              {% if priority.name != 'FLEXIBLE' %}
+              <div class="qualifier-controls">
+                <label class="qualifier-toggle">
+                  <input type="checkbox" name="qualifier_enabled_{{ priority.name }}" data-qualifier-toggle
+                    {% if entry.qualifier_enabled %}checked{% endif %}
+                    {% if not entry.selected %}disabled{% endif %}>
+                  Add qualifier
+                </label>
+                <div class="qualifier-fields" data-qualifier-fields {% if not entry.qualifier_enabled or not entry.selected %}hidden{% endif %}>
+                  <label for="operator-{{ priority.name }}">Condition
+                    <select id="operator-{{ priority.name }}" name="operator_{{ priority.name }}"
+                            data-qualifier-input {% if not entry.selected or not entry.qualifier_enabled %}disabled{% endif %}>
+                      {% for operator in entry.operator_options %}
+                      <option value="{{ operator.name }}" {% if entry.operator == operator.name %}selected{% endif %}>
+                        {{ operator.value.replace('_', ' ')|title }}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </label>
+                  <label for="qualifier-{{ priority.name }}">Value
+                    <input id="qualifier-{{ priority.name }}" type="{{ entry.qualifier_type }}"
+                          name="qualifier_value_{{ priority.name }}" value="{{ entry.qualifier_value }}"
+                          data-qualifier-input {% if not entry.selected or not entry.qualifier_enabled %}disabled{% endif %}>
+                  </label>
+                </div>
+              </div>
+              {% endif %}
+            </fieldset>
+            {% endfor %}
+          </div>
+          <button type="submit">Save priorities</button>
+        </form>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

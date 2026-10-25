@@ -116,6 +116,11 @@ class Qualifier:
     operator: QualifierOperator
     value: Any
 
+
+class MissingQualifierForTimeframe(ValueError):
+    pass
+
+
 @dataclass
 class Priority:
     priority_type: PriorityType
@@ -125,12 +130,11 @@ class Priority:
     def __init__(self, priority_type, weight, qualifier = None):
         self.priority_type = priority_type
         self.weight = weight
+        self.qualifier = qualifier
 
         if priority_type in (PriorityType.DEPARTURE_BEFORE, PriorityType.DEPARTURE_AFTER, PriorityType.ARRIVAL_BEFORE, PriorityType.ARRIVAL_AFTER):
             if qualifier is None:
                 raise MissingQualifierForTimeframe(f"Priority type: {priority_type} requires context of a Qualifier to adequately evaluate Trip quality")
-            else:
-                self.qualifier = qualifier
 
     def score(self, offer, dataset=None):
         field_name = self.priority_type.field_name

@@ -123,6 +123,10 @@ def _priority_form_data(user, submitted=None):
 
     for priority_type in PriorityType:
         saved = saved_priorities.get(priority_type)
+        requires_qualifier = priority_type.field_name in (
+            "departure_time",
+            "arrival_time",
+        )
         if has_submitted_data:
             priority_is_selected = priority_type.name in selected_names
         else:
@@ -131,10 +135,22 @@ def _priority_form_data(user, submitted=None):
         qualifier = saved.qualifier if saved else None
 
         if priority_type.field_name in ("departure_time", "arrival_time"):
-            operator_options = (QualifierOperator.EARLIER_THAN,QualifierOperator.LATER_THAN)
+            operator_options = (
+                (QualifierOperator.EARLIER_THAN,)
+                if priority_type.name.endswith("BEFORE")
+                else (QualifierOperator.LATER_THAN,)
+            )
         else:
             operator_options = (QualifierOperator.LESS_THAN, QualifierOperator.MORE_THAN)
-            
+        if requires_qualifier:
+            qualifier_enabled = True
+        elif has_submitted_data:
+            qualifier_enabled = (
+                submitted.get(f"qualifier_enabled_{priority_type.name}") == "on"
+            )
+        else:
+            qualifier_enabled = qualifier is not None
+
         entries.append(
             {
                 "type": priority_type,
@@ -143,10 +159,7 @@ def _priority_form_data(user, submitted=None):
                     f"weight_{priority_type.name}",
                     str(saved.weight if saved else 0),
                 ),
-                "qualifier_enabled": (
-                    submitted.get(f"qualifier_enabled_{priority_type.name}") == "on" if has_submitted_data
-                    else qualifier is not None
-                ),
+                "qualifier_enabled": qualifier_enabled,
                 "operator_options": operator_options,
                 "operator": submitted.get(
                     f"operator_{priority_type.name}",
@@ -191,9 +204,13 @@ def _save_priority_form(user, form):
 
         total_weight += weight
         qualifier = None
-        if (
-            priority_type is not PriorityType.FLEXIBLE
-            and form.get(f"qualifier_enabled_{name}") == "on"
+        requires_qualifier = priority_type.field_name in (
+            "departure_time",
+            "arrival_time",
+        )
+        if priority_type is not PriorityType.FLEXIBLE and (
+            requires_qualifier
+            or form.get(f"qualifier_enabled_{name}") == "on"
         ):
             operator_name = form.get(f"operator_{name}", "")
             if priority_type.field_name in ("departure_time", "arrival_time"):

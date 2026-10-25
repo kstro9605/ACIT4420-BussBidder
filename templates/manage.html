@@ -52,65 +52,117 @@
 
       <section class="manage-priority-card ">
         <h2>Trip priorities</h2>
-        <p>Select the priorities that matter to you, then assign their point weights. The total cannot exceed 100.</p>
+        <p>Drag priorities into the chart, or use the Add button. New priorities initially share the available 100 points equally. Adjust individual weights below; the total cannot exceed 100.</p>
         <form method="post" action="{{ url_for('manage_user') }}" id="priority-form">
           <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
           <input type="hidden" name="action" value="priorities">
-          <div class="weight-summary">
-            <label for="weight-progress">Points assigned:
-              <output id="weight-total">{{ total_weight|int }}</output> / 100
-            </label>
-            <progress id="weight-progress" max="100" value="{{ total_weight }}"></progress>
-          </div>
-
-          <div class="priority-list">
+          <div class="priority-builder">
+            <aside class="priority-palette" aria-label="Available priorities">
+              <h3>Available priorities</h3>
+              <p>Drag a priority to the chart, or add it with the button.</p>
             {% for entry in priorities %}
             {% set priority = entry.type %}
-            <fieldset class="priority-card" data-priority-row>
-              <legend>
-                <label class="priority-enable">
-                  <input type="checkbox" name="priority_type" value="{{ priority.name }}"
-                    {% if entry.selected %}checked{% endif %}>
-                  {{ priority.name.replace('_', ' ')|title }}
-                </label>
-              </legend>
+              <div class="priority-option" data-priority-option
+                   data-priority-name="{{ priority.name }}" draggable="true"
+                   {% if entry.selected %}hidden{% endif %}>
+                <span>{{ priority.name.replace('_', ' ')|title }}</span>
+                <button type="button" data-add-priority="{{ priority.name }}">Add</button>
+              </div>
+            {% endfor %}
+            </aside>
 
-              <label for="weight-{{ priority.name }}">Weight:
-                <output data-weight-output>{{ entry.weight }}</output> points
-              </label>
-              <input id="weight-{{ priority.name }}" type="range" name="weight_{{ priority.name }}"
-                    min="0" max="100" value="{{ entry.weight }}" data-weight
-                    {% if not entry.selected %}disabled{% endif %}>
-
-              {% if priority.name != 'FLEXIBLE' %}
-              <div class="qualifier-controls">
-                <label class="qualifier-toggle">
-                  <input type="checkbox" name="qualifier_enabled_{{ priority.name }}" data-qualifier-toggle
-                    {% if entry.qualifier_enabled %}checked{% endif %}
-                    {% if not entry.selected %}disabled{% endif %}>
-                  Add qualifier
-                </label>
-                <div class="qualifier-fields" data-qualifier-fields {% if not entry.qualifier_enabled or not entry.selected %}hidden{% endif %}>
-                  <label for="operator-{{ priority.name }}">Condition
-                    <select id="operator-{{ priority.name }}" name="operator_{{ priority.name }}"
-                            data-qualifier-input {% if not entry.selected or not entry.qualifier_enabled %}disabled{% endif %}>
-                      {% for operator in entry.operator_options %}
-                      <option value="{{ operator.name }}" {% if entry.operator == operator.name %}selected{% endif %}>
-                        {{ operator.value.replace('_', ' ')|title }}
-                      </option>
-                      {% endfor %}
-                    </select>
-                  </label>
-                  <label for="qualifier-{{ priority.name }}">Value
-                    <input id="qualifier-{{ priority.name }}" type="{{ entry.qualifier_type }}"
-                          name="qualifier_value_{{ priority.name }}" value="{{ entry.qualifier_value }}"
-                          data-qualifier-input {% if not entry.selected or not entry.qualifier_enabled %}disabled{% endif %}>
-                  </label>
+            <div class="priority-workspace">
+              <div class="chart-panel">
+                <div id="priority-chart" class="priority-chart" role="img"
+                     aria-label="Priority weight chart">
+                  <div class="priority-chart-center">
+                    <output id="weight-total">{{ total_weight|int }}</output>
+                    <span>of 100 points</span>
+                  </div>
+                </div>
+                <div class="weight-summary">
+                  <label for="weight-progress">Points assigned</label>
+                  <progress id="weight-progress" max="100" value="{{ total_weight }}"></progress>
                 </div>
               </div>
-              {% endif %}
-            </fieldset>
-            {% endfor %}
+
+              <div id="priority-dropzone" class="priority-dropzone"
+                   aria-label="Selected priorities and weight controls">
+                <p class="priority-empty-state" data-empty-state
+                   {% if total_weight or priorities|selectattr('selected')|list %}hidden{% endif %}>
+                  Drag a priority here to start building your chart.
+                </p>
+                {% for entry in priorities %}
+                {% set priority = entry.type %}
+                {% set requires_qualifier = priority.field_name in ('departure_time', 'arrival_time') %}
+                <article class="priority-card" data-priority-row
+                         data-priority-name="{{ priority.name }}"
+                         {% if not entry.selected %}hidden{% endif %}>
+                  <input type="hidden" name="priority_type" value="{{ priority.name }}"
+                         data-priority-input {% if not entry.selected %}disabled{% endif %}>
+                  <div class="priority-card-heading">
+                    <h4>{{ priority.name.replace('_', ' ')|title }}</h4>
+                    <button class="remove-priority" type="button"
+                            data-remove-priority="{{ priority.name }}">Remove</button>
+                  </div>
+                  <div class="weight-controls">
+                    <label for="weight-range-{{ priority.name }}">Weight</label>
+                    <input id="weight-range-{{ priority.name }}" type="range"
+                           min="0" max="100" value="{{ entry.weight }}"
+                           data-weight-range aria-label="{{ priority.name }} weight slider"
+                           {% if not entry.selected %}disabled{% endif %}>
+                    <input id="weight-{{ priority.name }}" type="number"
+                           name="weight_{{ priority.name }}" min="0" max="100"
+                           step="1" value="{{ entry.weight }}" data-weight-number
+                           aria-label="{{ priority.name }} weight in points"
+                           {% if not entry.selected %}disabled{% endif %}>
+                    <span>points</span>
+                  </div>
+
+                  {% if priority.name != 'FLEXIBLE' %}
+                  <div class="qualifier-controls">
+                    <label class="qualifier-toggle">
+                      <input type="checkbox"
+                             {% if requires_qualifier %}checked disabled{% else %}
+                               name="qualifier_enabled_{{ priority.name }}"
+                               {% if entry.qualifier_enabled %}checked{% endif %}
+                               {% if not entry.selected %}disabled{% endif %}
+                             {% endif %}
+                             data-qualifier-toggle
+                             {% if requires_qualifier %}data-required-qualifier{% endif %}>
+                      {% if requires_qualifier %}Required qualifier{% else %}Add qualifier{% endif %}
+                    </label>
+                    <div class="qualifier-fields" data-qualifier-fields
+                         {% if not entry.qualifier_enabled or not entry.selected %}hidden{% endif %}>
+                      <label for="operator-{{ priority.name }}">Condition
+                        <select id="operator-{{ priority.name }}"
+                                name="operator_{{ priority.name }}"
+                                data-qualifier-input
+                                {% if not entry.qualifier_enabled or not entry.selected %}disabled{% endif %}>
+                          {% for operator in entry.operator_options %}
+                          <option value="{{ operator.name }}"
+                                  {% if entry.operator == operator.name %}selected{% endif %}>
+                            {{ operator.value.replace('_', ' ')|title }}
+                          </option>
+                          {% endfor %}
+                        </select>
+                      </label>
+                      <label for="qualifier-{{ priority.name }}">Value
+                        <input id="qualifier-{{ priority.name }}"
+                               type="{{ entry.qualifier_type }}"
+                               name="qualifier_value_{{ priority.name }}"
+                               value="{{ entry.qualifier_value }}"
+                               data-qualifier-input
+                               {% if requires_qualifier %}required{% endif %}
+                               {% if not entry.qualifier_enabled or not entry.selected %}disabled{% endif %}>
+                      </label>
+                    </div>
+                  </div>
+                  {% endif %}
+                </article>
+                {% endfor %}
+              </div>
+            </div>
           </div>
           <button type="submit">Save priorities</button>
         </form>
