@@ -27,6 +27,27 @@
       margin: 4px 0 0;
       font-weight: 700;
     }
+
+    .priority-breakdown {
+      margin-top: 20px;
+    }
+
+    .priority-breakdown table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .priority-breakdown th,
+    .priority-breakdown td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .priority-breakdown th {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body data-theme="{{ user_theme }}">
@@ -68,7 +89,48 @@
             {% endif %}
           </dd>
         </div>
+        <div>
+            <a href="{{ url_for('booking', booking_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="booking_view" value={{trip.trip_id}}>Book Trip</a>
+        </div>
       </dl>
+      {% if priority_minded %}
+      <section class="priority-breakdown" aria-labelledby="priority-score-title">
+        <h3 id="priority-score-title">Priority scoring</h3>
+        {% if priority_score %}
+        <p>
+          Overall score: <strong>{{ '%.2f'|format(priority_score.score_value) }}</strong>
+          point(s). A higher score means a better match for your saved priorities.
+        </p>
+        {% if has_priorities %}
+        <p>
+          Each priority contributes points according to its weight (up to that
+          priority's assigned weight). The proportion of points to weight is determined by how well a trip 
+          meets its criteria for each priority, sometimes in comparison to other trips available
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Priority</th><th>Weight</th><th>Points earned</th></tr>
+            </thead>
+            <tbody>
+              {% for item in priority_score.priority_scores %}
+              <tr>
+                <td>{{ item.priority.priority_type.name.replace('_', ' ')|title }}</td>
+                <td>{{ item.priority.weight }}</td>
+                <td>{{ '%.2f'|format(item.score) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p>You have no saved priorities yet, so this trip has no preference-based score.</p>
+        {% endif %}
+        {% else %}
+        <p>This trip was not included in the original priority-ranked results.</p>
+        {% endif %}
+      </section>
+      {% endif %}
     </section>
     {% else %}
     <div class="notice">No trip details are available for this offer.</div>

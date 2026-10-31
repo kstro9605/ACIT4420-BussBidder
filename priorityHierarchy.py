@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from priority import PriorityType, Priority
+from scoreObject import Score, PriorityScore
 
 @dataclass
 class Hierarchy:
@@ -12,12 +13,16 @@ class Hierarchy:
     def score(self, payload):
         return_map = []
         for trip in payload:
-            score = 0
+            score = Score()
+            score_total = 0
             for priority in self.priorities.values():
                 current_priority_score = priority.score(trip, payload)
-                score = score + current_priority_score
-            return_map.append((round(score,2), trip))
-        return_map.sort(key=lambda item: item[0], reverse=True)
+                priority_score = PriorityScore(priority=priority, score=current_priority_score)
+                score.priority_scores.append(priority_score)
+                score_total = score_total + current_priority_score
+            score.score_value = score_total
+            return_map.append((score, trip))
+        return_map.sort(key=lambda item: item[0].score_value, reverse=True)
         return return_map
             
 

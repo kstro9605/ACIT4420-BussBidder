@@ -71,9 +71,13 @@ class TripPlanner():
         if max_transfers is not None:
             print("Max transfers filter applied")
             results = [trip for trip in results if trip.transfers <= max_transfers]
+        results = [trip for trip in results if trip.seats_available > 0]
         if number_of_seats is not None:
             print("Number of seats filter applied")
-            results = [trip for trip in results if trip.seats_available >= number_of_seats]
+            results = [
+                trip for trip in results
+                if trip.seats_available >= number_of_seats
+            ]
         if arrival_date is not None:
             print("Arrival date filter applied")
             trip_date = date.fromisoformat(arrival_date)

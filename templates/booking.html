@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book a trip | BussBidder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+  <style>
+    .booking-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px 20px;
+      margin: 0;
+    }
+
+    .booking-summary dt {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .booking-summary dd {
+      margin: 4px 0 0;
+      font-weight: 700;
+    }
+
+    .booking-form,
+    .booking-form .passenger-list,
+    .booking-form .booking-actions {
+      grid-column: 1 / -1;
+    }
+
+    .booking-form {
+      margin-top: 20px;
+    }
+
+    .passenger-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .passenger-list:empty {
+      display: none;
+    }
+
+    .booking-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .booking-actions output {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .payment-note {
+      grid-column: 1 / -1;
+    }
+
+    .booking-button:disabled {
+      cursor: not-allowed;
+    }
+
+    .booking-confirmation h2 {
+      margin-top: 0;
+    }
+
+    .booking-confirmation ul {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body data-theme="{{ user_theme }}">
+  {% include "_home_link.html" %}
+  <main>
+    <header>
+      <h1>{% if booking_confirmation %}Booking confirmation{% else %}Book your trip{% endif %}</h1>
+      {% if not booking_confirmation %}
+      <p>Review the trip, choose how many tickets you need, and enter a passenger name for each ticket.</p>
+      {% endif %}
+    </header>
+
+    {% if errors %}
+    <div class="notice error" role="alert">
+      <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+
+    {% for trip in results %}
+    <section aria-labelledby="booking-title-{{ loop.index }}">
+      <h2 id="booking-title-{{ loop.index }}">{{ trip.trip_company }} to {{ trip.trip_destination }}</h2>
+      <dl class="booking-summary">
+        <div><dt>Destination</dt><dd>{{ trip.trip_destination }}</dd></div>
+        <div><dt>Departure date</dt><dd>{{ trip.trip_date.isoformat() }}</dd></div>
+        <div><dt>Departure time</dt><dd>{{ trip.departure_time.strftime('%H:%M') }}</dd></div>
+        <div><dt>Price per ticket</dt><dd>€{{ '%.2f'|format(trip.trip_price) }}</dd></div>
+        <div><dt>Transfers</dt>
+          <dd>{{ trip.transfer_locations|join(', ') if trip.transfer_locations else 'None' }}</dd>
+        </div>
+        <div><dt>Tickets available</dt><dd>{{ trip.seats_available }}</dd></div>
+      </dl>
+
+      {% if booking_confirmation %}
+      <section class="notice booking-confirmation" role="status">
+        <h2>Booking confirmed</h2>
+        <p>
+          Your booking for {{ booking_confirmation.ticket_count }}
+          ticket(s) to {{ trip.trip_destination }} is confirmed.
+        </p>
+        <p>Total: €{{ '%.2f'|format(booking_confirmation.total) }}</p>
+        <h3>Passengers</h3>
+        <ul>
+          {% for name in booking_confirmation.passenger_names %}
+          <li>{{ name }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% elif trip.seats_available < 1 %}
+      <div class="notice">This trip is sold out and cannot be booked.</div>
+      {% else %}
+      <form class="booking-form" method="post" action="{{ url_for('booking') }}"
+            data-seats-available="{{ trip.seats_available }}"
+            data-price="{{ trip.trip_price }}">
+        <input type="hidden" name="booking_view" value="{{ trip.trip_id }}">
+        <input type="hidden" name="tickets_to_book" value="0" data-ticket-count>
+
+        <label for="ticket-count-{{ loop.index }}">Number of tickets
+          <input id="ticket-count-{{ loop.index }}" type="number" min="1"
+                 max="{{ trip.seats_available }}" step="1" value="1"
+                 required data-ticket-input>
+        </label>
+
+        <fieldset class="passenger-list" data-passenger-list>
+          <legend>Passenger names</legend>
+        </fieldset>
+
+        <section class="notice payment-note" aria-label="Payment">
+          <h3>Payment</h3>
+          <p>This is a mock booking step. No payment details are requested or collected.</p>
+        </section>
+
+        <div class="booking-actions">
+          <button class="booking-button" type="submit" disabled data-book-button>
+            Book tickets
+          </button>
+          <output aria-live="polite" data-total></output>
+        </div>
+      </form>
+      {% endif %}
+    </section>
+    {% else %}
+    <div class="notice">No trip was selected. Return to trip search and choose a trip to book.</div>
+    {% endfor %}
+  </main>
+
+  <script>
+    document.querySelectorAll(".booking-form").forEach((form) => {
+      const ticketInput = form.querySelector("[data-ticket-input]");
+      const passengerList = form.querySelector("[data-passenger-list]");
+      const ticketCount = form.querySelector("[data-ticket-count]");
+      const bookButton = form.querySelector("[data-book-button]");
+      const totalOutput = form.querySelector("[data-total]");
+      const availableSeats = Number(form.dataset.seatsAvailable);
+      const price = Number(form.dataset.price);
+
+      function updateBookingForm() {
+        const tickets = Number(ticketInput.value);
+        const validTicketCount = Number.isInteger(tickets)
+          && tickets >= 1
+          && tickets <= availableSeats;
+
+        passengerList.querySelectorAll("label").forEach((label, index) => {
+          if (index >= tickets) {
+            label.remove();
+          }
+        });
+
+        const currentNames = passengerList.querySelectorAll("input[name='passenger_names']");
+        for (let index = currentNames.length; index < (validTicketCount ? tickets : 0); index += 1) {
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          const passengerNumber = index + 1;
+          label.htmlFor = `${ticketInput.id}-passenger-${passengerNumber}`;
+          label.textContent = `Passenger ${passengerNumber} name`;
+          input.id = label.htmlFor;
+          input.name = "passenger_names";
+          input.type = "text";
+          input.autocomplete = "name";
+          input.required = true;
+          label.append(input);
+          passengerList.append(label);
+        }
+
+        ticketCount.value = validTicketCount ? String(tickets) : "0";
+        totalOutput.textContent = validTicketCount
+          ? `Total: €${(price * tickets).toFixed(2)}`
+          : "Enter a ticket count within the available seats.";
+        bookButton.disabled = !validTicketCount
+          || passengerList.querySelectorAll("input[name='passenger_names']")
+            .length !== tickets
+          || [...passengerList.querySelectorAll("input[required]")]
+            .some((input) => !input.value.trim());
+      }
+
+      ticketInput.addEventListener("input", updateBookingForm);
+      passengerList.addEventListener("input", updateBookingForm);
+      form.addEventListener("submit", (event) => {
+        updateBookingForm();
+        if (bookButton.disabled || !form.reportValidity()) {
+          event.preventDefault();
+        }
+      });
+
+      updateBookingForm();
+    });
+  </script>
+</body>
+</html>

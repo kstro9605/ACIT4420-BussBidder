@@ -2,6 +2,7 @@ from datetime import date, time
 from hmac import compare_digest
 from pathlib import Path
 import secrets
+from urllib.parse import parse_qs
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, session, url_for
 
@@ -196,13 +197,89 @@ def create_app(planner, loaded_count):
     def show_details():
         selected_detail = request.args.get("detail_view")
         results = planner.find_trips(selected_detail)
+        priority_minded = request.args.get("priority_minded") == "true"
+        priority_score = None
+        has_priorities = False
+
+        if priority_minded:
+            user = current_user()
+            if user is not None:
+                has_priorities = bool(user.hierarchy.priorities)
+                all_trips = planner.find_trips()
+               
+                priority_score = next(
+                    (
+                        score
+                        for score, trip in user.hierarchy.score(all_trips)
+                        if trip.trip_id == selected_detail
+                    ),
+                    None,
+                )
+
         return render_template(
             "details.html",
             fields=FORM_FIELDS,
             values={},
             errors=[],
-            results=results
+            results=results,
+            priority_minded=priority_minded,
+            priority_score=priority_score,
+            has_priorities=has_priorities,
         )
+
+    @app.route("/booking", methods=["GET", "POST"])
+    def booking():
+        selected_trip = (
+            request.form.get("booking_view")
+            if request.method == "POST"
+            else request.args.get("booking_view")
+        )
+        trips = planner.find_trips(selected_trip)
+        if len(trips) != 1:
+            return render_template(
+                "booking.html",
+                booking_view=selected_trip,
+                errors=["Attempting to book for a non existing trip"],
+                results=[],
+                booking_confirmation=None,
+            ), 404
+
+        trip = trips[0]
+        errors = []
+        booking_confirmation = None
+        if request.method == "POST":
+            try:
+                number_to_book = int(request.form.get("tickets_to_book", ""))
+            except ValueError:
+                number_to_book = 0
+
+            passenger_names = [
+                name.strip() for name in request.form.getlist("passenger_names")
+            ]
+            if number_to_book < 1:
+                errors.append("Enter a valid number of tickets.")
+            elif number_to_book > trip.seats_available:
+                errors.append("There are not enough seats available for this booking.")
+            if len(passenger_names) != number_to_book or any(
+                not name for name in passenger_names
+            ):
+                errors.append("Enter a name for every ticket.")
+
+            if not errors:
+                trip.seats_available -= number_to_book
+                booking_confirmation = {
+                    "ticket_count": number_to_book,
+                    "passenger_names": passenger_names,
+                    "total": trip.trip_price * number_to_book,
+                }
+
+        return render_template(
+            "booking.html",
+            booking_view=selected_trip,
+            errors=errors,
+            results=trips,
+            booking_confirmation=booking_confirmation,
+        ), 400 if errors else 200
 
     @app.get("/search")
     def search_trips():

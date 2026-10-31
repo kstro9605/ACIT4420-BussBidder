@@ -20,7 +20,7 @@
       <a class="account-access" href="{{ url_for('account') }}">Log in or create account</a>
       {% endif %}
       </div>
-      <p>Enter one or more filters. Leave fields empty to ignore them. {{ loaded_count }} trips available.</p>
+      <p>Enter one or more filters. Leave fields empty to ignore them.</p>
     </header>
     <form method="get" action="/search">
       {% for name, label, placeholder, options, field_type in fields %}
@@ -120,13 +120,14 @@
             </tr></thead><tbody>
               {% for score,trip in results %}
               <tr>
-                <td>{{ '%.2f'|format(score) }}</td>
+                <td>{{ '%.2f'|format(score.score_value) }}</td>
                 <td>{{ trip.trip_id }}</td>
                 <td>{{ trip.trip_destination }}</td>
                 <td>{{ trip.trip_date.isoformat() }}</td>
                 <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
                 <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
-                <td><a href="{{ url_for('show_details', detail_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="detail_view" value={{trip.trip_id}}>Trip Details</a></td>
+                <td><a href="{{ url_for('show_details', detail_view=trip.trip_id, priority_minded='true') }}" target="_blank" rel="noopener noreferrer">Trip Details</a></td>
+                <td><a href="{{ url_for('booking', booking_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="booking_view" value={{trip.trip_id}}>Book Trip</a></td>
               </tr>
               {% endfor %}
             </tbody></table></div>
@@ -149,7 +150,8 @@
                   <td>{{ trip.trip_date.isoformat() }}</td>
                   <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
                   <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
-                  <td><a href="{{ url_for('show_details', detail_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="detail_view" value={{trip.trip_id}}>Trip Details</a></td>
+                  <td><a href="{{ url_for('show_details', detail_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer">Trip Details</a></td>
+                  <td><a href="{{ url_for('booking', booking_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="booking_view" value={{trip.trip_id}}>Book Trip</a></td>
                 </tr>
               {% endfor %}
         </tbody></table></div>
