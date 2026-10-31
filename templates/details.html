@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trip details | BussBidder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+  <style>
+    .trip-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .trip-details div {
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .trip-details dt {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .trip-details dd {
+      margin: 4px 0 0;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body data-theme="{{ user_theme }}">
+  {% include "_home_link.html" %}
+  <main>
+    <header>
+      <h1>Trip details</h1>
+      <p>Full details for the selected trip.</p>
+    </header>
+
+    {% for trip in results %}
+    <section aria-labelledby="trip-{{ loop.index }}-title">
+      <h2 id="trip-{{ loop.index }}-title">Offer {{ trip.trip_id }}</h2>
+      <dl class="trip-details">
+        <div><dt>Trip ID</dt><dd>{{ trip.trip_id }}</dd></div>
+        <div><dt>Company</dt><dd>{{ trip.trip_company }}</dd></div>
+        <div><dt>Destination</dt><dd>{{ trip.trip_destination }}</dd></div>
+        <div><dt>Travel date</dt><dd>{{ trip.trip_date.isoformat() }}</dd></div>
+        <div><dt>Arrival date</dt><dd>{{ trip.arrival_date.isoformat() }}</dd></div>
+        <div><dt>Departure time</dt><dd>{{ trip.departure_time.strftime('%H:%M') }}</dd></div>
+        <div><dt>Arrival time</dt><dd>{{ trip.arrival_time.strftime('%H:%M') }}</dd></div>
+        <div><dt>Duration</dt><dd>{{ trip.duration }} minutes</dd></div>
+        <div><dt>Price</dt><dd>€{{ '%.2f'|format(trip.trip_price) }}</dd></div>
+        <div><dt>Transfers</dt><dd>{{ trip.transfers }}</dd></div>
+        <div><dt>Transfer locations</dt>
+          <dd>{{ trip.transfer_locations|join(', ') if trip.transfer_locations else 'None' }}</dd>
+        </div>
+        <div><dt>Luggage allowance</dt><dd>{{ trip.luggage_allowance }} kg</dd></div>
+        <div><dt>Changes allowed</dt><dd>{{ 'Yes' if trip.changes_allowed else 'No' }}</dd></div>
+        <div><dt>Refundable</dt><dd>{{ 'Yes' if trip.refundable else 'No' }}</dd></div>
+        <div><dt>Seats available</dt><dd>{{ trip.seats_available }}</dd></div>
+        <div><dt>Customer rating</dt><dd>{{ '%.1f'|format(trip.customer_rating) }} / 5</dd></div>
+        <div><dt>Environmental impact</dt>
+          <dd>
+            {% if trip.environmental_impact is not none %}
+              {{ '%.2f'|format(trip.environmental_impact) }} kg CO₂e per passenger
+            {% else %}
+              Not provided
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+    </section>
+    {% else %}
+    <div class="notice">No trip details are available for this offer.</div>
+    {% endfor %}
+  </main>
+</body>
+</html>

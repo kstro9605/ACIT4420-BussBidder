@@ -1,9 +1,7 @@
 import csv
 from datetime import date, time
 from tripsService import Trip
-
-VALID_COMPANIES = {"SolRuta", "Camino Express", "CostaLink", "VerdeBus", "NocheVia"}
-VALID_DESTINATIONS = {"Barcelona", "Valencia", "Seville", "Bilbao", "Granada", "Malaga", "Zaragoza", "Alicante", "Cordoba", "Toledo", "Cadiz", "San Sebastian", "Santiago de Compostela", "Salamanca", "Murcia"}
+from constants import VALID_COMPANIES, VALID_DESTINATIONS
 
 def parse_bool(value):
     value = value.strip().upper()

@@ -9,6 +9,7 @@
   <script src="{{ url_for('static', filename='search.js') }}" defer></script>
 </head>
 <body data-theme="{{ user_theme }}">
+  {% include "_home_link.html" %}
   <main>
     <header>
       <div style="display:flex">
@@ -21,7 +22,7 @@
       </div>
       <p>Enter one or more filters. Leave fields empty to ignore them. {{ loaded_count }} trips available.</p>
     </header>
-    <form method="get" action="/">
+    <form method="get" action="/search">
       {% for name, label, placeholder, options, field_type in fields %}
         {% if field_type == 'radio' %}
           <fieldset class="radio-field">
@@ -96,7 +97,7 @@
         </label>
         {% endif %}
       {% endfor %}
-      <div class="actions"><button id="search-button" type="submit">Search trips</button><a class="clear" href="/">Clear filters</a></div>
+      <div class="actions"><button id="search-button" type="submit">Search trips</button><a class="clear" href="/search">Clear filters</a></div>
       {% if session.get('user_email') %}
       <button id="weighted-search-button" type="submit" name="search_mode" value="weighted">Search trips ranked by your priorities</button>
       {% endif %}
@@ -114,21 +115,18 @@
           <section>
             <h2>{{ results|length }} trip(s) found and ranked with your priorities in mind</h2>
             <div class="table-wrap"><table><thead><tr>
-              <th>Score</th><th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
-              <th>Departs</th><th>Arrives</th><th>Price</th><th>Transfers</th><th>Rating</th>
+              <th>Score</th><th>Offer</th><th>Destination</th><th>Date</th>
+                <th>Departs</th><th>Price</th>
             </tr></thead><tbody>
               {% for score,trip in results %}
               <tr>
-                <td>{{ score }}</td>
+                <td>{{ '%.2f'|format(score) }}</td>
                 <td>{{ trip.trip_id }}</td>
-                <td>{{ trip.trip_company }}</td>
                 <td>{{ trip.trip_destination }}</td>
                 <td>{{ trip.trip_date.isoformat() }}</td>
                 <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
-                <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
                 <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
-                <td>{{ trip.transfers }}</td>
-                <td>{{ '%.1f'|format(trip.customer_rating) }}/5</td>
+                <td><a href="{{ url_for('show_details', detail_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="detail_view" value={{trip.trip_id}}>Trip Details</a></td>
               </tr>
               {% endfor %}
             </tbody></table></div>
@@ -136,23 +134,24 @@
         {% else %}
       <section>
         <h2>{{ results|length }} trip(s) found</h2>
-        <div class="table-wrap"><table><thead><tr>
-          <th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
-          <th>Departs</th><th>Arrives</th><th>Price</th><th>Transfers</th><th>Rating</th>
-        </tr></thead><tbody>
-          {% for trip in results %}
-          <tr>
-            <td>{{ trip.trip_id }}</td>
-            <td>{{ trip.trip_company }}</td>
-            <td>{{ trip.trip_destination }}</td>
-            <td>{{ trip.trip_date.isoformat() }}</td>
-            <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
-            <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
-            <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
-            <td>{{ trip.transfers }}</td>
-            <td>{{ '%.1f'|format(trip.customer_rating) }}/5</td>
-          </tr>
-          {% endfor %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Offer</th><th>Destination</th><th>Date</th>
+                <th>Departs</th><th>Price</th>
+            </thead
+            ><tbody>
+              {% for trip in results %}
+                <tr>
+                  <td>{{ trip.trip_id }}</td>
+                  <td>{{ trip.trip_destination }}</td>
+                  <td>{{ trip.trip_date.isoformat() }}</td>
+                  <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
+                  <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
+                  <td><a href="{{ url_for('show_details', detail_view=trip.trip_id) }}" target="_blank" rel="noopener noreferrer" name="detail_view" value={{trip.trip_id}}>Trip Details</a></td>
+                </tr>
+              {% endfor %}
         </tbody></table></div>
       </section>
       {% endif %}

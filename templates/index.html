@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BussBidder | Find your trip</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='launch.css') }}">
+</head>
+<body data-theme="{{ user_theme }}">
+  {% include "_home_link.html" %}
+  <main class="launch-page">
+    <header class="launch-header">
+      <p class="eyebrow">BussBidder</p>
+      <h1>Find a trip that works for you</h1>
+      <p>Compare bus trips and find the right option for your journey.</p>
+    </header>
+
+    <nav class="launch-tabs" aria-label="Main navigation">
+      {% if session.get('user_email') %}
+      <a class="launch-tab" href="{{ url_for('manage_user') }}">Manage account</a>
+      {% else %}
+      <a class="launch-tab" href="{{ url_for('account') }}">Log in / Register</a>
+      {% endif %}
+      <a class="launch-tab" href="{{ url_for('search_trips') }}">Regular search</a>
+      {% if session.get('user_email') %}
+      <a class="launch-tab" href="{{ url_for('user_search') }}">Quick Priority search</a>
+      {% endif %}
+    </nav>
+  </main>
+</body>
+</html>

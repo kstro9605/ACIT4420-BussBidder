@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advanced search | BussBidder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='user-search.css') }}">
+  <script src="{{ url_for('static', filename='user-search.js') }}" defer></script>
+</head>
+<body data-theme="{{ user_theme }}">
+  {% include "_home_link.html" %}
+  <main class="user-search-page">
+    <header>
+      <p class="eyebrow">Personalized trip search</p>
+      <h1>Find trips for {{ user.name }}</h1>
+      <p>Choose your destination and dates to see up to six trips ranked by your saved preferences.</p>
+      <a href="{{ url_for('landing_page') }}">Back to home</a>
+      <span aria-hidden="true"> | </span>
+      <a href="{{ url_for('manage_user') }}">Manage preferences</a>
+    </header>
+
+    {% if not has_priorities %}
+    <div class="notice">
+      You have not saved trip preferences yet. Matches are shown in the default trip order
+      until you add preferences.
+      <a href="{{ url_for('manage_user') }}">Set your preferences</a>
+    </div>
+    {% endif %}
+
+    <form method="get" action="{{ url_for('user_search') }}" id="user-search-form">
+      <input type="hidden" name="search" value="1">
+      <div>
+        <label for="number-of-seats">How many tickets do you need?
+          <input id="number-of-seats" type="number" name="number_of_seats" min="1"
+                 step="1" value="{{ values.get('number_of_seats', '') }}" required>
+        </label>
+      </div>
+      <div>
+      <div class="user-search-tabs" role="tablist" aria-label="Trip Search Options">
+        <button class="user-search-tab" id="destination-tab" type="button" role="tab"
+                aria-controls="destination-panel">Destination</button>
+        <button class="user-search-tab" id="date-tab" type="button" role="tab"
+                aria-controls="date-panel">Travel date</button>
+        <button class="user-search-tab" id="results-tab" type="button" role="tab"
+                aria-controls="results-panel">Top 6 trips</button>
+      </div>
+
+      <section class="user-search-panel" id="destination-panel" role="tabpanel"
+               aria-labelledby="destination-tab">
+        <h2>Where are you going?</h2>
+        <label for="destination">Destination
+          <select id="destination" name="destination" multiple>
+            <option value="">Choose a destination</option>
+            {% for destination in destinations %}
+            <option value="{{ destination }}" {% if values.get('destination') == destination %}selected{% endif %}>
+              {{ destination }}
+            </option>
+            {% endfor %}
+          </select>
+        </label>
+        
+        <button type="button" data-next-tab="date-tab">Choose travel date</button>
+      </section>
+
+      <section class="user-search-panel" id="date-panel" role="tabpanel"
+               aria-labelledby="date-tab" hidden>
+        <h2>When would you like to travel?</h2>
+        <label class="date-range-toggle" for="flexible-date">
+          <input id="flexible-date" type="checkbox" name="desired_date_is_flexible"
+                 value="TRUE" {% if values.get('desired_date_is_flexible') == 'TRUE' %}checked{% endif %}>
+          Search a date range
+        </label>
+        <label for="desired-date" id="single-date-label">Travel date
+          <input id="desired-date" type="date" name="desired_date"
+                 value="{{ values.get('desired_date', '') }}">
+        </label>
+        <div class="date-range-fields" id="date-range-fields" hidden>
+          <label for="desired-date-from">From
+            <input id="desired-date-from" type="date" name="desired_date_from"
+                   value="{{ values.get('desired_date_from', '') }}" disabled>
+          </label>
+          <label for="desired-date-to">To
+            <input id="desired-date-to" type="date" name="desired_date_to"
+                   value="{{ values.get('desired_date_to', '') }}" disabled>
+          </label>
+        </div>
+        <div class="step-actions">
+          <button type="button" class="secondary-button" data-next-tab="destination-tab">Back</button>
+          <button type="submit">Show matching trips</button>
+        </div>
+      </section>
+      </div>
+
+      <section class="user-search-panel results-panel" id="results-panel" role="tabpanel"
+               aria-labelledby="results-tab" hidden>
+        <h2>Your top matches</h2>
+        {% if errors %}
+        <div class="notice error" role="alert">
+          <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+        </div>
+        {% elif results is not none %}
+          {% if results %}
+          <p>Showing up to six trips that match your destination, date, and ticket needs.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Match</th><th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
+                  <th>Departs</th><th>Arrives</th><th>Price</th><th>Seats</th></tr>
+              </thead>
+              <tbody>
+                {% for score, trip in results %}
+                <tr>
+                  <td>{{ '%.2f'|format(score) }}</td>
+                  <td>{{ trip.trip_id }}</td>
+                  <td>{{ trip.trip_company }}</td>
+                  <td>{{ trip.trip_destination }}</td>
+                  <td>{{ trip.trip_date.isoformat() }}</td>
+                  <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
+                  <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
+                  <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
+                  <td>{{ trip.seats_available }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="notice">No trips match those details. Try another destination, date, or ticket count.</div>
+          {% endif %}
+        {% else %}
+        <p>Complete the destination and travel date steps, then select “Show matching trips.”</p>
+        {% endif %}
+        <button type="button" class="secondary-button" data-next-tab="date-tab">Edit search</button>
+      </section>
+    </form>
+  </main>
+</body>
+</html>

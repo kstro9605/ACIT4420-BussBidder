@@ -5,7 +5,6 @@ import secrets
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, session, url_for
 
-
 from dataLoader import load_trips
 from priority import PriorityType, Qualifier, QualifierOperator
 from priorityHierarchy import Hierarchy
@@ -178,7 +177,6 @@ def create_app(planner, loaded_count):
 
     def current_user():
         email = session.get("user_email")
-        user = accounts.get(email) if email else None
         return accounts.get(email) if email else None
 
     @app.context_processor
@@ -187,6 +185,26 @@ def create_app(planner, loaded_count):
         return {"user_theme": user.theme if user else DEFAULT_THEME}
 
     @app.get("/")
+    def landing_page():
+        return render_template(
+            "index.html",
+            values={},
+            errors=[],
+        )
+
+    @app.get("/details")
+    def show_details():
+        selected_detail = request.args.get("detail_view")
+        results = planner.find_trips(selected_detail)
+        return render_template(
+            "details.html",
+            fields=FORM_FIELDS,
+            values={},
+            errors=[],
+            results=results
+        )
+
+    @app.get("/search")
     def search_trips():
         values = request.args.to_dict(flat=False)
         weighted_search = request.args.get("search_mode") == "weighted"
@@ -238,6 +256,34 @@ def create_app(planner, loaded_count):
             ),
             400 if errors else 200,
         )
+
+    @app.get("/specialized-search")
+    def user_search():
+        user = current_user()
+        if user is None:
+            return redirect(url_for("account"))
+
+        results = None
+        errors = []
+        submitted = request.args.get("search") == "1"
+        values = request.args.to_dict()
+
+        weighted_results = None
+        if submitted:
+            raw_values = request.args.to_dict(flat=False)
+            query, errors = planner.parse_search(raw_values)
+            results = planner.find_trips(**query) if not errors else None
+            weighted_results = user.hierarchy.score(results)
+
+        return render_template(
+            "user_search.html",
+            user=user,
+            destinations=sorted(VALID_DESTINATIONS),
+            values=values,
+            errors=errors,
+            results=weighted_results,
+            has_priorities=bool(user.hierarchy.priorities),
+        ), 400 if errors else 200
 
     @app.route("/account", methods=["GET", "POST"])
     def account():
@@ -316,7 +362,6 @@ def create_app(planner, loaded_count):
 
             action = request.form.get("action")
             if action == "profile":
-                print("Profile action")
                 name = request.form.get("name", "").strip()
                 email = request.form.get("email", "").strip().lower()
                 new_password = request.form.get("new_password", "")

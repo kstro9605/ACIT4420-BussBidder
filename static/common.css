@@ -96,6 +96,32 @@ body[data-theme] {
   background: var(--page-bg);
 }
 
+.home-link {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--accent);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.home-link:hover,
+.home-link:focus-visible {
+  background: var(--accent-highlight);
+}
+
+.home-link svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
 main {
   max-width: 1050px;
   margin: 40px auto;

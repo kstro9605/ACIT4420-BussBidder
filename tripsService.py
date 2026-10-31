@@ -34,7 +34,7 @@ class TripPlanner():
     def add_trips(self, trips):
         self.trips.extend(trips)
 
-    def find_trips(self, companies=None, destinations=None, desired_date=None, desired_date_from=None,
+    def find_trips(self, trip_id=None, companies=None, destinations=None, desired_date=None, desired_date_from=None,
                    desired_date_to=None, max_price=None, min_rating=None,
                    max_transfers=None, number_of_seats=None, arrival_date=None, departure_time=None, 
                    arrival_date_from=None, arrival_date_to=None,
@@ -42,6 +42,8 @@ class TripPlanner():
                    arrival_time=None, arrival_time_from=None, arrival_time_to=None, luggage_allowance=None,
                    changeable=None, refundable=None, environmental_impact=None):
         results = self.trips
+        if trip_id:
+            results = [trip for trip in results if trip.trip_id in trip_id]
         if companies:
             print("Company filter applied")
             results = [trip for trip in results if trip.trip_company in companies]
