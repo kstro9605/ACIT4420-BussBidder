@@ -1,6 +1,8 @@
+import csv
+import json
+import secrets
 from datetime import time
 from pathlib import Path
-import secrets
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, session, url_for
 
@@ -284,6 +286,7 @@ def create_app(planner, loaded_count):
                     booked_by_email=user.email if user else None,
                 )
                 booked_trips.append(booking)
+                planner.store_booking_in_file(booking)  
                 if user is not None:
                     user.booked_trips.append(booking)
                 booking_confirmation = {
@@ -493,6 +496,51 @@ def create_app(planner, loaded_count):
             else:
                 errors.append("Unknown update action.")
 
+        with (Path.cwd() / "registered_users.csv").open(
+            "w", newline="", encoding="utf-8"
+        ) as users_file:
+            writer = csv.DictWriter(
+                users_file,
+                fieldnames=("name", "email", "theme", "priorities", "booking_ids"),
+            )
+            writer.writeheader()
+            for registered_user in accounts.values():
+                if registered_user.is_admin:
+                    continue
+                priorities = [
+                    {
+                        "type": priority.priority_type.name,
+                        "weight": priority.weight,
+                        "qualifier": (
+                            {
+                                "operator": priority.qualifier.operator.name,
+                                "value": (
+                                    priority.qualifier.value.isoformat()
+                                    if hasattr(priority.qualifier.value, "isoformat")
+                                    else priority.qualifier.value
+                                ),
+                            }
+                            if priority.qualifier
+                            else None
+                        ),
+                    }
+                    for priority in registered_user.hierarchy.priorities.values()
+                ]
+                writer.writerow(
+                    {
+                        "name": registered_user.name,
+                        "email": registered_user.email,
+                        "theme": registered_user.theme,
+                        "priorities": json.dumps(priorities, ensure_ascii=False),
+                        "booking_ids": json.dumps(
+                            [
+                                booking.booking_id
+                                for booking in registered_user.booked_trips
+                            ]
+                        ),
+                    }
+                )
+
         return render_template(
             "manage.html",
             user=user,
@@ -518,9 +566,14 @@ def run_web_interface(host="127.0.0.1", port=8000):
     trips, errors = load_trips(csv_path)
     print(f"Loaded {len(trips)} valid trip(s) from {csv_path}.")
     if errors:
-        print(f"Skipped {len(errors)} invalid trip row(s):")
-        for error in errors:
-            print(f"  {error}")
+        with open("error.output", "a", encoding="utf-8") as error_file:
+            message = f"Skipped {len(errors)} invalid trip row(s):"
+            print(message)
+            print(message, file=error_file)
+            for error in errors:
+                message = f"  {error}"
+                print(message)
+                print(message, file=error_file)
 
     planner = TripPlanner()
     planner.add_trips(trips)

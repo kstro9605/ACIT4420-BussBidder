@@ -1,5 +1,8 @@
 from datetime import date, time
+from pathlib import Path
 from constants import FORM_FIELDS, VALID_COMPANIES, VALID_DESTINATIONS
+import csv, json
+
 
 class Trip():
     def __init__(self, trip_id, trip_company, trip_destination, trip_date, arrival_date, departure_time, arrival_time, duration_minutes, price_euro, transfers, transfer_locations, luggage_allowance, changeable, refundable, seats_available, customer_rating, environmental_impact):
@@ -209,3 +212,42 @@ class TripPlanner():
                 errors.append(f"{label}: {error}")
 
         return query, errors
+
+    def store_booking_in_file(self, booking):
+        booking_path = Path.cwd() / "active_bookings.csv"
+        with booking_path.open(
+            "a+", newline="", encoding="utf-8"
+        ) as booking_file:
+            booking_file.seek(0, 2)
+            writer = csv.writer(booking_file)
+            if booking_file.tell() == 0:
+                writer.writerow(
+                    (
+                        "booking_id",
+                        "trip_id",
+                        "trip_company",
+                        "trip_destination",
+                        "trip_date",
+                        "departure_time",
+                        "ticket_count",
+                        "passenger_names",
+                        "total",
+                        "booked_by_name",
+                        "booked_by_email",
+                    )
+                )
+            writer.writerow(
+                (
+                    booking.booking_id,
+                    booking.trip_id,
+                    booking.trip_company,
+                    booking.trip_destination,
+                    booking.trip_date.isoformat(),
+                    booking.departure_time.isoformat(),
+                    booking.ticket_count,
+                    json.dumps(booking.passenger_names, ensure_ascii=False),
+                    booking.total,
+                    booking.booked_by_name or "",
+                    booking.booked_by_email or "",
+                )
+            )
