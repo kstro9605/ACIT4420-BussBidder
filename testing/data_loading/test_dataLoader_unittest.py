@@ -1,7 +1,31 @@
+import csv
 import unittest
-from dataLoader import load_trips
+from datetime import date, timedelta
+from dataLoader import load_trips, row_to_trip_with_validation
 
 class TestDataLoader(unittest.TestCase):
+    def test_trip_date_cannot_be_before_today(self):
+        with open('testing/data_loading/valid_test.csv', newline='', encoding='utf-8') as file:
+            row = next(csv.DictReader(file))
+        row["travel_date"] = row["arrival_date"] = (
+            date.today() + timedelta(days=1)
+        ).isoformat()
+        row["travel_date"] = (date.today() - timedelta(days=1)).isoformat()
+
+        with self.assertRaisesRegex(ValueError, "Trip date .* is before the current date"):
+            row_to_trip_with_validation(row)
+
+    def test_arrival_date_cannot_be_before_today(self):
+        with open('testing/data_loading/valid_test.csv', newline='', encoding='utf-8') as file:
+            row = next(csv.DictReader(file))
+        row["travel_date"] = row["arrival_date"] = (
+            date.today() + timedelta(days=1)
+        ).isoformat()
+        row["arrival_date"] = (date.today() - timedelta(days=1)).isoformat()
+
+        with self.assertRaisesRegex(ValueError, "Arrival date .* is before the current date"):
+            row_to_trip_with_validation(row)
+
     def test_load_data_valid_file(self):
         data = load_trips('testing/data_loading/valid_test.csv')
         self.assertIsNotNone(data, "Data should not be None for a valid file")

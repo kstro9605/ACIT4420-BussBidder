@@ -31,6 +31,11 @@ def row_to_trip_with_validation(row):
         arrival_date=date.fromisoformat(row["arrival_date"])
     except ValueError as e:
         raise ValueError(f"Invalid date, expected YYYY-MM-DD, Error: {e}")
+    today = date.today()
+    if trip_date < today:
+        raise ValueError(f"Trip date {trip_date} is before the current date {today}.")
+    if arrival_date < today:
+        raise ValueError(f"Arrival date {arrival_date} is before the current date {today}.")
     if trip_date > arrival_date:
         raise ValueError(f"Trip date {trip_date} is after the arrival date {arrival_date}. This trip is not possible")
     
