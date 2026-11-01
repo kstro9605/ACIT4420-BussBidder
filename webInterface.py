@@ -8,7 +8,7 @@ from flask import Flask, redirect, render_template, request, session, url_for
 
 from dataLoader import load_trips
 from priority import PriorityType, Qualifier, QualifierOperator
-from priorityHierarchy import Hierarchy
+from priorityHierarchy import Hierarchy, OverWeightPrioritiesError, InvalidPriorityBundleException
 from tripsService import TripPlanner
 from user import Booking, User
 from constants import DEFAULT_THEME, FORM_FIELDS, THEME_OPTIONS, VALID_DESTINATIONS, VALID_THEMES
@@ -154,7 +154,14 @@ def _save_priority_form(user, form):
         return errors
 
     hierarchy = Hierarchy()
-    hierarchy.create_priorities(priorities)
+    try:
+        hierarchy.create_priorities(priorities)
+    except OverWeightPrioritiesError as error:
+        errors.append(f"Error creating priorities: {error}")
+        return errors
+    except InvalidPriorityBundleException as error:
+        errors.append(f"Error creating priorities: {error}")
+        return errors
     user.set_hierarchy(hierarchy)
     return []
 
