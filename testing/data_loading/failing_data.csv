@@ -1,0 +1,9 @@
+offer_id,company,destination,travel_date,arrival_date,departure_time,arrival_time,duration_minutes,price_euro,transfers,transfer_via,luggage_allowance_kg,changeable,refundable,available_seats,customer_rating,rating_scale_max,environmental_measure_kg_co2e_per_passenger,data_quality_note
+OF001,SolRuta,Barcelona,2026-11-03,2026-11-03,07:15,17:47,632,-12.5,1,Valencia,15,FALSE,TRUE,16,3.9,5,24.55,ERROR: negative price
+OF017,SolRuta,Atlantis,2026-11-05,2026-11-05,17:15,23:35,380,27.9,1,Zaragoza,15,FALSE,TRUE,12,3.5,5,18.1,ERROR: unknown destination
+OF032,Camino Express,Seville,2026-13-40,2026-11-09,08:15,14:11,356,69.8,0,,20,FALSE,TRUE,1,4.1,5,,ERROR: invalid travel date
+OF046,Camino Express,Bilbao,2026-11-09,2026-11-03,18:30,09:15,285,56.96,0,,20,TRUE,TRUE,7,4.2,5,16.17,ERROR: arrival before departure on same date; duration inconsistent
+OF059,CostaLink,Toledo,2026-11-04,2026-11-04,15:45,18:04,139,17.77,1,Talavera,20,TRUE,FALSE,3,6.2,5,3.2,ERROR: rating exceeds 5-point scale
+OF064,CostaLink,Alicante,2026-11-09,2026-11-09,06:45,13:44,419,43.54,1,Murcia,20,TRUE,FALSE,0,4.3,5,17.93,ERROR: no available seats
+OF073,CostaLink,Santiago de Compostela,2026-11-04,2026-11-05,18:45,04:12,567,,1,Leon,20,FALSE,FALSE,4,3.9,5,26.06,ERROR: missing price
+OF125,NocheVia,Malaga,2026-11-06,2026-11-07,20:45,04:23,458,49.77,-1,,20,TRUE,TRUE,1,4.3,5,18.68,ERROR: negative transfer count

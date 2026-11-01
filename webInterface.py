@@ -164,18 +164,6 @@ def create_app(planner, loaded_count):
     accounts = {}
     app.extensions["user_accounts"] = accounts
 
-    def csrf_token():
-        token = session.get("_csrf_token")
-        if token is None:
-            token = secrets.token_urlsafe(32)
-            session["_csrf_token"] = token
-        return token
-
-    def validate_csrf():
-        submitted = request.form.get("_csrf_token", "")
-        expected = session.get("_csrf_token", "")
-        return bool(expected) and compare_digest(submitted, expected)
-
     def current_user():
         email = session.get("user_email")
         return accounts.get(email) if email else None
@@ -196,7 +184,7 @@ def create_app(planner, loaded_count):
     @app.get("/details")
     def show_details():
         selected_detail = request.args.get("detail_view")
-        results = planner.find_trips(selected_detail)
+        selected_trip = planner.find_trips(selected_detail)[0]
         priority_minded = request.args.get("priority_minded") == "true"
         priority_score = None
         has_priorities = False
@@ -218,10 +206,7 @@ def create_app(planner, loaded_count):
 
         return render_template(
             "details.html",
-            fields=FORM_FIELDS,
-            values={},
-            errors=[],
-            results=results,
+            trip=selected_trip,
             priority_minded=priority_minded,
             priority_score=priority_score,
             has_priorities=has_priorities,
@@ -277,7 +262,7 @@ def create_app(planner, loaded_count):
             "booking.html",
             booking_view=selected_trip,
             errors=errors,
-            results=trips,
+            trip=trip,
             booking_confirmation=booking_confirmation,
         ), 400 if errors else 200
 
@@ -368,9 +353,6 @@ def create_app(planner, loaded_count):
         form_values = {}
 
         if request.method == "POST":
-            if not validate_csrf():
-                return "Invalid or expired form token. Reload and try again.", 400
-
             action = request.form.get("action")
             email = request.form.get("email", "").strip().lower()
             password = request.form.get("password", "")
@@ -415,7 +397,6 @@ def create_app(planner, loaded_count):
             "account.html",
             errors=errors,
             values=form_values,
-            csrf_token=csrf_token(),
         )
 
     @app.route("/manage", methods=["GET", "POST"])
@@ -434,8 +415,6 @@ def create_app(planner, loaded_count):
         priority_values = None
 
         if request.method == "POST":
-            if not validate_csrf():
-                return "Invalid or expired form token. Reload and try again.", 400
 
             action = request.form.get("action")
             if action == "profile":
@@ -479,16 +458,13 @@ def create_app(planner, loaded_count):
             profile_values=profile_values,
             theme_options=THEME_OPTIONS,
             total_weight=user.hierarchy.total_weight,
-            csrf_token=csrf_token(),
         )
 
     @app.post("/logout")
     def logout():
-        if not validate_csrf():
-            return "Invalid or expired form token. Reload and try again.", 400
         session.clear()
         return redirect(url_for("account"))
-
+    
     return app
 
 def run_web_interface(host="127.0.0.1", port=8000):

@@ -88,9 +88,8 @@
     </div>
     {% endif %}
 
-    {% for trip in results %}
-    <section aria-labelledby="booking-title-{{ loop.index }}">
-      <h2 id="booking-title-{{ loop.index }}">{{ trip.trip_company }} to {{ trip.trip_destination }}</h2>
+    <section aria-labelledby="booking-title-{{ trip.trip_id }}">
+      <h2 id="booking-title-{{ trip.trip_id }}">{{ trip.trip_company }} to {{ trip.trip_destination }}</h2>
       <dl class="booking-summary">
         <div><dt>Destination</dt><dd>{{ trip.trip_destination }}</dd></div>
         <div><dt>Departure date</dt><dd>{{ trip.trip_date.isoformat() }}</dd></div>
@@ -126,8 +125,8 @@
         <input type="hidden" name="booking_view" value="{{ trip.trip_id }}">
         <input type="hidden" name="tickets_to_book" value="0" data-ticket-count>
 
-        <label for="ticket-count-{{ loop.index }}">Number of tickets
-          <input id="ticket-count-{{ loop.index }}" type="number" min="1"
+        <label for="ticket-count">Number of tickets
+          <input id="ticket-count" type="number" min="1"
                  max="{{ trip.seats_available }}" step="1" value="1"
                  required data-ticket-input>
         </label>
@@ -150,9 +149,6 @@
       </form>
       {% endif %}
     </section>
-    {% else %}
-    <div class="notice">No trip was selected. Return to trip search and choose a trip to book.</div>
-    {% endfor %}
   </main>
 
   <script>

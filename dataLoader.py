@@ -1,5 +1,6 @@
 import csv
 from datetime import date, time
+from pathlib import Path
 from tripsService import Trip
 from constants import VALID_COMPANIES, VALID_DESTINATIONS
 
@@ -88,7 +89,7 @@ def row_to_trip_with_validation(row):
     try:
         seats_available=int(row["available_seats"])
         if seats_available <= 0:
-            ValueError("There needs to be at least 1 available seat for a trip to be valid")
+            raise ValueError("There needs to be at least 1 available seat for a trip to be valid")
     except ValueError as e:
         raise ValueError(f"Invalid seats available data. Error: {e}")
     
@@ -134,11 +135,40 @@ def row_to_trip_with_validation(row):
     )
 
 def load_trips(filename):
+    if Path(filename).suffix.lower() != ".csv":
+        raise ValueError(f"Expected a CSV file, got: {filename}")
+
     trips = []
     errors = []
 
     with open(filename, "r", newline="", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
+        required_columns = {
+            "offer_id",
+            "company",
+            "destination",
+            "travel_date",
+            "arrival_date",
+            "departure_time",
+            "arrival_time",
+            "duration_minutes",
+            "price_euro",
+            "transfers",
+            "transfer_via",
+            "luggage_allowance_kg",
+            "changeable",
+            "refundable",
+            "available_seats",
+            "customer_rating",
+            "rating_scale_max",
+            "environmental_measure_kg_co2e_per_passenger",
+        }
+        missing_columns = required_columns - set(reader.fieldnames or ())
+        if missing_columns:
+            raise ValueError(
+                f"Invalid CSV file; missing required columns: "
+                f"{', '.join(sorted(missing_columns))}"
+            )
 
         for line_number, row in enumerate(reader, start=2):
             try:

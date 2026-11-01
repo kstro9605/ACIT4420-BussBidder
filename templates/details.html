@@ -58,9 +58,8 @@
       <p>Full details for the selected trip.</p>
     </header>
 
-    {% for trip in results %}
-    <section aria-labelledby="trip-{{ loop.index }}-title">
-      <h2 id="trip-{{ loop.index }}-title">Offer {{ trip.trip_id }}</h2>
+    <section aria-labelledby="trip-{{ trip.trip_id }}-title">
+      <h2 id="trip-{{ trip.trip_id }}-title">Offer {{ trip.trip_id }}</h2>
       <dl class="trip-details">
         <div><dt>Trip ID</dt><dd>{{ trip.trip_id }}</dd></div>
         <div><dt>Company</dt><dd>{{ trip.trip_company }}</dd></div>
@@ -132,9 +131,7 @@
       </section>
       {% endif %}
     </section>
-    {% else %}
-    <div class="notice">No trip details are available for this offer.</div>
-    {% endfor %}
+
   </main>
 </body>
 </html>
