@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>System bookings | BussBidder</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+<body data-theme="{{ user_theme }}">
+  {% include "_home_link.html" %}
+  <main>
+    <header>
+      <h1>All system bookings</h1>
+      <p><a href="{{ url_for('manage_user') }}">Back to account management</a></p>
+    </header>
+
+    {% if bookings %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Confirmation ID</th>
+            <th scope="col">Trip</th>
+            <th scope="col">Date</th>
+            <th scope="col">Tickets</th>
+            <th scope="col">Passengers</th>
+            <th scope="col">Booked by</th>
+            <th scope="col">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in bookings %}
+          <tr>
+            <td>{{ booking.booking_id }}</td>
+            <td>{{ booking.trip_company }} to {{ booking.trip_destination }}</td>
+            <td>{{ booking.trip_date.isoformat() }} at
+              {{ booking.departure_time.strftime('%H:%M') }}</td>
+            <td>{{ booking.ticket_count }}</td>
+            <td>{{ booking.passenger_names|join(', ') }}</td>
+            <td>
+              {% if booking.booked_by_email %}
+              Registered user: {{ booking.booked_by_name }} ({{ booking.booked_by_email }})
+              {% else %}
+              Guest
+              {% endif %}
+            </td>
+            <td>€{{ '%.2f'|format(booking.total) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p>No trips have been booked.</p>
+    {% endif %}
+  </main>
+</body>
+</html>

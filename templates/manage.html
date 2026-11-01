@@ -19,6 +19,9 @@
       <form method="post" action="{{ url_for('logout') }}">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
         <button class="secondary-button" type="submit">Log out</button>
+        {% if is_admin %}
+        <a href="{{ url_for('system_bookings') }}">All system bookings</a>
+        {% endif %}
         <a href="{{ url_for('search_trips') }}">Back to trip search</a>
       </form>
     </header>
@@ -177,6 +180,42 @@
           </div>
           <button type="submit">Save priorities</button>
         </form>
+      </section>
+
+      <section class="manage-card">
+        <h2>Booked trips</h2>
+        {% if booked_trips %}
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Confirmation ID</th>
+                <th scope="col">Trip</th>
+                <th scope="col">Date</th>
+                <th scope="col">Departure</th>
+                <th scope="col">Tickets</th>
+                <th scope="col">Passengers</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for booking in booked_trips %}
+              <tr>
+                <td>{{ booking.booking_id }}</td>
+                <td>{{ booking.trip_company }} to {{ booking.trip_destination }}</td>
+                <td>{{ booking.trip_date.isoformat() }}</td>
+                <td>{{ booking.departure_time.strftime('%H:%M') }}</td>
+                <td>{{ booking.ticket_count }}</td>
+                <td>{{ booking.passenger_names|join(', ') }}</td>
+                <td>€{{ '%.2f'|format(booking.total) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p>You have no booked trips yet.</p>
+        {% endif %}
       </section>
     </div>
   </main>

@@ -30,7 +30,7 @@
           <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
           <input type="hidden" name="action" value="login">
           <label for="login-email">Email
-            <input id="login-email" type="email" name="email" value="{{ values.get('email', '') }}" autocomplete="email" required>
+            <input id="login-email" type="text" name="email" value="{{ values.get('email', '') }}" autocomplete="username" required>
           </label>
           <label for="login-password">Password
             <input id="login-password" type="password" name="password" autocomplete="current-password" required>

@@ -1,8 +1,6 @@
 from datetime import date, time
-from hmac import compare_digest
 from pathlib import Path
 import secrets
-from urllib.parse import parse_qs
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, redirect, render_template, request, session, url_for
 
@@ -10,7 +8,7 @@ from dataLoader import load_trips
 from priority import PriorityType, Qualifier, QualifierOperator
 from priorityHierarchy import Hierarchy
 from tripsService import TripPlanner
-from user import User
+from user import Booking, User
 from constants import *
 
 def _priority_form_data(user, submitted=None):
@@ -163,6 +161,25 @@ def create_app(planner, loaded_count):
     app.secret_key = secrets.token_hex(32)
     accounts = {}
     app.extensions["user_accounts"] = accounts
+    booked_trips = []
+    app.extensions["booked_trips"] = booked_trips
+
+    #This is just to access all bookings and is not a 
+    #secure way to handle admin accounts. 
+    # In a real application, 
+    # you would want to implement a more secure authentication 
+    # and authorization system.
+    admin_password = "HugeSecurityRisk"
+    admin = User(
+        username="bb_admin",
+        password=generate_password_hash(admin_password),
+        email="admin@bb_admin.com",
+        name="Bookings administrator",
+        is_admin=True,
+    )
+    admin.set_hierarchy(Hierarchy())
+    accounts[admin.email] = admin
+
 
     def current_user():
         email = session.get("user_email")
@@ -252,10 +269,28 @@ def create_app(planner, loaded_count):
 
             if not errors:
                 trip.seats_available -= number_to_book
+                user = current_user()
+                booking = Booking(
+                    booking_id=f"BOOKING_{len(booked_trips) + 1}_{trip.trip_id}",
+                    trip_id=trip.trip_id,
+                    trip_company=trip.trip_company,
+                    trip_destination=trip.trip_destination,
+                    trip_date=trip.trip_date,
+                    departure_time=trip.departure_time,
+                    ticket_count=number_to_book,
+                    passenger_names=tuple(passenger_names),
+                    total=trip.trip_price * number_to_book,
+                    booked_by_name=user.name if user else None,
+                    booked_by_email=user.email if user else None,
+                )
+                booked_trips.append(booking)
+                if user is not None:
+                    user.booked_trips.append(booking)
                 booking_confirmation = {
-                    "ticket_count": number_to_book,
-                    "passenger_names": passenger_names,
-                    "total": trip.trip_price * number_to_book,
+                    "ticket_count": booking.ticket_count,
+                    "passenger_names": booking.passenger_names,
+                    "total": booking.total,
+                    "booking_id": booking.booking_id,
                 }
 
         return render_template(
@@ -302,7 +337,7 @@ def create_app(planner, loaded_count):
                 ),
                 400 if errors else 200,
             )
-        
+
         return (
             render_template(
                 "search.html",
@@ -318,6 +353,15 @@ def create_app(planner, loaded_count):
             ),
             400 if errors else 200,
         )
+
+    @app.get("/admin/bookings")
+    def system_bookings():
+        user = current_user()
+        if user is None:
+            return redirect(url_for("account"))
+        if not user.is_admin:
+            return "Forbidden", 403
+        return render_template("system_bookings.html", bookings=booked_trips)
 
     @app.get("/specialized-search")
     def user_search():
@@ -458,6 +502,8 @@ def create_app(planner, loaded_count):
             profile_values=profile_values,
             theme_options=THEME_OPTIONS,
             total_weight=user.hierarchy.total_weight,
+            booked_trips=user.booked_trips,
+            is_admin=user.is_admin,
         )
 
     @app.post("/logout")
