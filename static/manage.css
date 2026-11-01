@@ -47,11 +47,6 @@
   border: 0;
 }
 
-.secondary-button {
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
 .weight-summary {
   display: grid;
   gap: 8px;

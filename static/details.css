@@ -1,0 +1,13 @@
+.trip-details div {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.priority-breakdown {
+  margin-top: 20px;
+}
+
+.priority-breakdown th,
+.priority-breakdown td {
+  padding: 10px 8px;
+}

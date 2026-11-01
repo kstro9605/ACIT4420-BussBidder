@@ -1,8 +1,13 @@
+.search-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .account-access {
-  display: inline;
-  margin-left: 600px;
+  margin-left: auto;
   text-align: center;
-  align-content: last baseline;
 }
 
 .field-group {

@@ -5,50 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Trip details | BussBidder</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-  <style>
-    .trip-details {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-
-    .trip-details div {
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .trip-details dt {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .trip-details dd {
-      margin: 4px 0 0;
-      font-weight: 700;
-    }
-
-    .priority-breakdown {
-      margin-top: 20px;
-    }
-
-    .priority-breakdown table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    .priority-breakdown th,
-    .priority-breakdown td {
-      padding: 10px 8px;
-      border-bottom: 1px solid var(--border-soft);
-    }
-
-    .priority-breakdown th {
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='details.css') }}">
 </head>
 <body data-theme="{{ user_theme }}">
   {% include "_home_link.html" %}

@@ -8,3 +8,4 @@ __pycache__/user.cpython-313.pyc
 __pycache__/constants.cpython-313.pyc
 __pycache__/scoreObject.cpython-313.pyc
 testing/trip_scoring/__pycache__/test_trip_scoring_unittest.cpython-313.pyc
+testing/data_loading/__pycache__/test_dataLoader_unittest.cpython-313.pyc

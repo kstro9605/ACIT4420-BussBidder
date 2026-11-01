@@ -12,8 +12,8 @@
   {% include "_home_link.html" %}
   <main>
     <header>
-      <div style="display:flex">
-      <h1 style="display:flex">Find your trip</h1>
+      <div class="search-header">
+      <h1>Find your trip</h1>
       {% if session.get('user_email') %}
       <a class="account-access" href="{{ url_for('manage_user') }}">Manage account</a>
       {% else %}

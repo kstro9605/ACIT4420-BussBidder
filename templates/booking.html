@@ -5,72 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Book a trip | BussBidder</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-  <style>
-    .booking-summary {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px 20px;
-      margin: 0;
-    }
-
-    .booking-summary dt {
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-
-    .booking-summary dd {
-      margin: 4px 0 0;
-      font-weight: 700;
-    }
-
-    .booking-form,
-    .booking-form .passenger-list,
-    .booking-form .booking-actions {
-      grid-column: 1 / -1;
-    }
-
-    .booking-form {
-      margin-top: 20px;
-    }
-
-    .passenger-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .passenger-list:empty {
-      display: none;
-    }
-
-    .booking-actions {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .booking-actions output {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .payment-note {
-      grid-column: 1 / -1;
-    }
-
-    .booking-button:disabled {
-      cursor: not-allowed;
-    }
-
-    .booking-confirmation h2 {
-      margin-top: 0;
-    }
-
-    .booking-confirmation ul {
-      margin-bottom: 0;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='booking.css') }}">
+  <script src="{{ url_for('static', filename='booking.js') }}" defer></script>
 </head>
 <body data-theme="{{ user_theme }}">
   {% include "_home_link.html" %}
@@ -151,66 +87,5 @@
     </section>
   </main>
 
-  <script>
-    document.querySelectorAll(".booking-form").forEach((form) => {
-      const ticketInput = form.querySelector("[data-ticket-input]");
-      const passengerList = form.querySelector("[data-passenger-list]");
-      const ticketCount = form.querySelector("[data-ticket-count]");
-      const bookButton = form.querySelector("[data-book-button]");
-      const totalOutput = form.querySelector("[data-total]");
-      const availableSeats = Number(form.dataset.seatsAvailable);
-      const price = Number(form.dataset.price);
-
-      function updateBookingForm() {
-        const tickets = Number(ticketInput.value);
-        const validTicketCount = Number.isInteger(tickets)
-          && tickets >= 1
-          && tickets <= availableSeats;
-
-        passengerList.querySelectorAll("label").forEach((label, index) => {
-          if (index >= tickets) {
-            label.remove();
-          }
-        });
-
-        const currentNames = passengerList.querySelectorAll("input[name='passenger_names']");
-        for (let index = currentNames.length; index < (validTicketCount ? tickets : 0); index += 1) {
-          const label = document.createElement("label");
-          const input = document.createElement("input");
-          const passengerNumber = index + 1;
-          label.htmlFor = `${ticketInput.id}-passenger-${passengerNumber}`;
-          label.textContent = `Passenger ${passengerNumber} name`;
-          input.id = label.htmlFor;
-          input.name = "passenger_names";
-          input.type = "text";
-          input.autocomplete = "name";
-          input.required = true;
-          label.append(input);
-          passengerList.append(label);
-        }
-
-        ticketCount.value = validTicketCount ? String(tickets) : "0";
-        totalOutput.textContent = validTicketCount
-          ? `Total: €${(price * tickets).toFixed(2)}`
-          : "Enter a ticket count within the available seats.";
-        bookButton.disabled = !validTicketCount
-          || passengerList.querySelectorAll("input[name='passenger_names']")
-            .length !== tickets
-          || [...passengerList.querySelectorAll("input[required]")]
-            .some((input) => !input.value.trim());
-      }
-
-      ticketInput.addEventListener("input", updateBookingForm);
-      passengerList.addEventListener("input", updateBookingForm);
-      form.addEventListener("submit", (event) => {
-        updateBookingForm();
-        if (bookButton.disabled || !form.reportValidity()) {
-          event.preventDefault();
-        }
-      });
-
-      updateBookingForm();
-    });
-  </script>
 </body>
 </html>

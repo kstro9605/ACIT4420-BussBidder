@@ -1,0 +1,46 @@
+.booking-form,
+.booking-form .passenger-list,
+.booking-form .booking-actions {
+  grid-column: 1 / -1;
+}
+
+.booking-form {
+  margin-top: 20px;
+}
+
+.passenger-list {
+  display: grid;
+  gap: 12px;
+}
+
+.passenger-list:empty {
+  display: none;
+}
+
+.booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.booking-actions output {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.payment-note {
+  grid-column: 1 / -1;
+}
+
+.booking-button:disabled {
+  cursor: not-allowed;
+}
+
+.booking-confirmation h2 {
+  margin-top: 0;
+}
+
+.booking-confirmation ul {
+  margin-bottom: 0;
+}
