@@ -5,7 +5,6 @@ from tripsService import TripPlanner
 from user import User
 from priorityHierarchy import Hierarchy
 from priority import PriorityType, Priority, Qualifier, QualifierOperator
-from scoreObject import Score, PriorityScore
 
 class TestTripScoring(unittest.TestCase):
     def setUp(self):

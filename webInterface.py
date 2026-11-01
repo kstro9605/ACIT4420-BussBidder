@@ -1,4 +1,4 @@
-from datetime import date, time
+from datetime import time
 from pathlib import Path
 import secrets
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -9,7 +9,7 @@ from priority import PriorityType, Qualifier, QualifierOperator
 from priorityHierarchy import Hierarchy
 from tripsService import TripPlanner
 from user import Booking, User
-from constants import *
+from constants import DEFAULT_THEME, FORM_FIELDS, THEME_OPTIONS, VALID_DESTINATIONS, VALID_THEMES
 
 def _priority_form_data(user, submitted=None):
     submitted = submitted or {}
@@ -164,10 +164,10 @@ def create_app(planner, loaded_count):
     booked_trips = []
     app.extensions["booked_trips"] = booked_trips
 
-    #This is just to access all bookings and is not a 
+    #This is just to access all bookings and isn't a 
     #secure way to handle admin accounts. 
     # In a real application, 
-    # you would want to implement a more secure authentication 
+    # you'd want to implement a more secure authentication 
     # and authorization system.
     admin_password = "HugeSecurityRisk"
     admin = User(
