@@ -41,8 +41,10 @@ BussBidder/
 
 # Project Design Diagram
 
-![project flowchart](.\data\Flow_Diagram.png)
-See the [project flowchart](data/PROJECT_FLOWCHART.md) for a diagram of the main application paths.
+
+![project flowchart](data/Flow_Diagram.png)
+
+See the [project flowchart](data/Flow_Diagram.png) for a diagram of the main application paths.
 
 ## Python Modules
 
