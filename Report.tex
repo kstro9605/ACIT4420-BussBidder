@@ -1,0 +1,275 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Structured General Purpose Assignment
+% LaTeX Template
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx} % Required to insert images
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in 
+
+\linespread{2.0} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ (\hmwkClassInstructor\ \hmwkClassTime): \hmwkTitle} % Top center header
+\rhead{\firstxmark} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+   
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Assignment\ \#1} % Assignment title
+\newcommand{\hmwkDueDate}{Monday,\ January\ 1,\ 2012} % Due date
+\newcommand{\hmwkClass}{BIO\ 101} % Course/class
+\newcommand{\hmwkClassTime}{10:30am} % Class/lecture time
+\newcommand{\hmwkClassInstructor}{Jones} % Teacher/lecturer
+\newcommand{\hmwkAuthorName}{John Smith} % Your name
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS
+%----------------------------------------------------------------------------------------
+
+%\setcounter{tocdepth}{1} % Uncomment this line if you don't want subsections listed in the ToC
+
+\newpage
+\tableofcontents
+\newpage
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+% To have just one problem per page, simply put a \clearpage after each problem
+
+\begin{homeworkProblem}
+\lipsum[1]\vspace{10pt} % Question
+
+\problemAnswer{ % Answer
+\begin{center}
+\includegraphics[width=0.75\columnwidth]{example_figure} % Example image
+\end{center}
+
+\lipsum[2]
+}
+\end{homeworkProblem}
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 2
+%----------------------------------------------------------------------------------------
+
+\begin{homeworkProblem}[Exercise \#\arabic{homeworkProblemCounter}] % Custom section title
+\lipsum[3] % Question
+
+%--------------------------------------------
+
+\begin{homeworkSection}{(a)} % Section within problem
+\lipsum[4]\vspace{10pt} % Question
+
+\problemAnswer{ % Answer
+\lipsum[5]
+}
+\end{homeworkSection}
+
+%--------------------------------------------
+
+\begin{homeworkSection}{(b)} % Section within problem
+\problemAnswer{ % Answer
+\lipsum[6]
+}
+\end{homeworkSection}
+
+%--------------------------------------------
+
+\end{homeworkProblem}
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 3
+%----------------------------------------------------------------------------------------
+
+\begin{homeworkProblem}[Prob. \Roman{homeworkProblemCounter}] % Roman numerals
+
+%--------------------------------------------
+
+\begin{homeworkSection}{\homeworkProblemName:~(a)} % Using the problem name elsewhere
+\problemAnswer{ % Answer
+\lipsum[7]
+}
+\end{homeworkSection}
+
+%--------------------------------------------
+
+\begin{homeworkSection}{\homeworkProblemName:~(b)}
+\lipsum[8]\vspace{10pt} % Question
+
+\problemAnswer{ % Answer
+\lipsum[9]
+}
+\end{homeworkSection}
+
+%--------------------------------------------
+
+\end{homeworkProblem}
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 4
+%----------------------------------------------------------------------------------------
+
+\begin{homeworkProblem}[Prob. \Roman{homeworkProblemCounter}] % Roman numerals
+\problemAnswer{ % Answer
+\lipsum[10]
+}
+\end{homeworkProblem}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
+
+
+1. Introduction
+- Introduce BusBidder Spain and its purpose.
+- Explain the problem of comparing competing bus offers.
+- Establish the objective: personalized filtering and weighted ranking of journeys.
+- Briefly summarize the application's functionality.
+2. Requirements and Problem Interpretation
+- Identify the main functional requirements.
+- Explain key design assumptions and decisions.
+- Distinguish mandatory requirements from user preferences.
+- Summarize how the implementation addresses the assignment.
+3. System Architecture and Software Design
+- Present the architecture diagram and application workflow.
+- Explain the modular project structure and module responsibilities.
+- Introduce the main classes and their relationships.
+- Justify object-oriented design decisions.
+- Discuss relevant inheritance, composition, decorators and dynamic behaviour.
+4. Data Management and Validation
+- Describe the dataset, its structure and contents.
+- Explain CSV loading and type conversion.
+- Describe validation of invalid, missing and inconsistent records.
+- Explain error handling, custom exceptions and logging.
+- Discuss how invalid records are handled.
+5. Search, Filtering and Weighted Ranking
+- Explain the search and filtering process.
+- Describe hard constraints versus soft preferences.
+- Explain the Priority and PriorityHierarchy architecture.
+- Describe comparative versus binary evaluation methods.
+- Explain score normalization and the weighting system.
+- Discuss flexibility scoring and qualifiers.
+- Present the overall scoring formula.
+- Explain score transparency and ranking results.
+6. Web Interface and Booking Functionality
+- Describe the Flask application and its structure.
+- Explain the main user-facing functionality.
+- Discuss registration, authentication and saved preferences.
+- Describe the booking workflow and booking persistence.
+- Briefly explain frontend implementation (HTML, CSS, JavaScript).
+7. Testing and Experimental Results
+- Describe the testing approach and automated test suites.
+- Present data validation tests.
+- Present scoring and ranking tests.
+- Discuss boundary, invalid and missing-data cases.
+- Include screenshots and selected application outputs.
+- Evaluate whether observed results are reasonable.
+8. Traveller Profile Comparisons
+- Define three different traveller profiles:
+  - Budget-focused traveller.
+  - Business traveller.
+  - Flexibility-focused tourist.
+- Present their respective priority weights.
+- Run all three against the same dataset.
+- Compare their resulting rankings and scores.
+- Explain why their recommendations differ.
+9. Critical Evaluation and Limitations
+- Identify the application's main strengths.
+- Discuss technical limitations and design trade-offs.
+- Evaluate scoring assumptions and normalization.
+- Discuss potential unfair outcomes and unintended biases.
+- Identify possible improvements and future development.
+- Reflect on challenges and lessons learned.
