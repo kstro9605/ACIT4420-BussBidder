@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.11.2)  2 NOV 2026 21:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.11.2)  2 NOV 2026 23:29
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -60,7 +60,15 @@ File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen159
 \Gin@req@width=\dimen160
-) (C:\Program Files\MiKTeX\tex/latex/float\float.sty
+) (C:\Program Files\MiKTeX\tex/latex/pdflscape\pdflscape.sty
+Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
+ (C:\Program Files\MiKTeX\tex/latex/pdflscape\pdflscape-nometadata.sty
+Package: pdflscape-nometadata 2022-10-28 v0.13 Display of landscape pages in PDF (HO)
+ (C:\Program Files\MiKTeX\tex/latex/graphics\lscape.sty
+Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
+)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+)) (C:\Program Files\MiKTeX\tex/latex/float\float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count287
 \float@exts=\toks19
@@ -231,7 +239,7 @@ LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> OT1/lmtt/m/n on input line 38.
 )
-LaTeX Font Info:    Trying to load font information for T1+lmr on input line 29.
+LaTeX Font Info:    Trying to load font information for T1+lmr on input line 30.
  (C:\Program Files\MiKTeX\tex/latex/lm\t1lmr.fd
 File: t1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) (C:\Program Files\MiKTeX\tex/latex/l3kernel\l3backend-pdftex.def
@@ -240,20 +248,20 @@ File: l3backend-pdftex.def 2026-09-09 L3 backend support: PDF output (pdfTeX)
 ) (Report.aux)
 \openout1 = `Report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 29.
-LaTeX Font Info:    ... okay on input line 29.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 30.
+LaTeX Font Info:    ... okay on input line 30.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -340,19 +348,22 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 <../data/BusBidder_Data_Flow.png, id=15, 1051.67906pt x 1510.89468pt>
 File: ../data/BusBidder_Data_Flow.png Graphic file (type png)
 <use ../data/BusBidder_Data_Flow.png>
-Package pdftex.def Info: ../data/BusBidder_Data_Flow.png  used on input line 75.
+Package pdftex.def Info: ../data/BusBidder_Data_Flow.png  used on input line 76.
 (pdftex.def)             Requested size: 399.83476pt x 574.4226pt.
  [3 <../data/BusBidder_Data_Flow.png>]
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 82.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 83.
  (C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [4
 
 ]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 158.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 116.
  (C:\Program Files\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [5{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}] [6] 
+) [5{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 176.
+ [6{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}] [7{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathex.enc}] [8] 
 enddocument/afterlastpage (AED): lastpage setting LastPage.
 (Report.aux)
  ***********
@@ -361,17 +372,17 @@ L3 programming layer <2026-09-09>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 4242 strings out of 467392
- 66114 string characters out of 5415748
- 491760 words of memory out of 5000000
- 33535 multiletter control sequences out of 15000+600000
- 665255 words of font info for 62 fonts, out of 8000000 for 9000
+ 4336 strings out of 467392
+ 68431 string characters out of 5415748
+ 497729 words of memory out of 5000000
+ 33611 multiletter control sequences out of 15000+600000
+ 671828 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,12n,65p,692b,302s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on Report.pdf (7 pages, 221056 bytes).
+ 65i,12n,67p,561b,302s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
+Output written on Report.pdf (9 pages, 288579 bytes).
 PDF statistics:
- 59 PDF objects out of 1000 (max. 8388607)
+ 97 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

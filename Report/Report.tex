@@ -2,6 +2,7 @@
 
 \usepackage[a4paper,margin=1in]{geometry}
 \usepackage{graphicx}
+\usepackage{pdflscape}
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{enumitem}
@@ -83,35 +84,169 @@ The project structure includes two key modules for reading data and storing it f
 The \texttt{dataLoader.py} validates it row by row rejecting and reporting failed imports along with reasoning for rejection before they are converted into \texttt{Trip} objects. The file \texttt{tripsService.py} then manages the storage of \texttt{Trip} objects, and then implements the system for querying stored trips, and is also responsible for exporting booking information to external files. 
 
 \subsubsection{Priority Evaluation and Ranking System}
-The module \texttt{priority.py} defines priority types, qualifiers, and evaluation methods. The module \texttt{priorityHierarchy.py} stores the user's chosen weights and ranks candidate trips. The file \texttt{scoreObject.py} contains the objects used to represent a trip's score and the breakdown of each priority contribution. The class definitions in \texttt{user.py} handle the user account model and saved preferences, while \texttt{webInterface.py} exposes the application routes and page rendering logic.
+The module \texttt{priority.py} is the primary point of determining a scoring of trips. It defines priority types, qualifiers, and evaluation methods and metrics. 
+The module \texttt{priorityHierarchy.py} stores and manages the adding and removing of Priority objects and their associated weights, and is how the user initiates a scoring. 
+The file \texttt{scoreObject.py} contains the objects used to represent a trip's score and the breakdown of each priority contribution. 
 
-This architecture reflects object-oriented design principles. Each class is responsible for a limited and well-defined set of responsibilities, which makes the code easier to test. The use of separate modules also allows the ranking system to operate independently from the web interface, which is useful for both validation and future extension. Inheritance, composition, counting logic, and dynamic behaviour are all relevant to the project. For example, a user can maintain a priority hierarchy that changes at runtime, and trip scoring can adapt to different priority types without changing the wider application model.
+\subsubsection{User Management and Graphical Interface}
+The class definitions in \texttt{user.py} handle the user account data and model, stores a users weighted priorities; and also establishes a definition of a \texttt{Booking} object. 
+The \texttt{webInterface.py} Module is the most complex module in the project, and is where the Flask application is defined and run and exports failed data imports and reasoning to the external file \texttt{error.output}. 
+It is responsible for exposing the application routes and page rendering logic. It also handles the user input, validating it and querying the data against it. 
+It is through this module that the user can create an account, log in, and save their priority hierarchy, and search for trips have the system display a ranked list of results. 
+The user can then select a trip to book, and the system will save the booking information while updating the Trip data to reduce the number of available seats.
 
-The application also demonstrates composition through the relationship between a user and their saved priorities, and between a trip and its underlying attributes. The design allows multiple traveller profiles to be evaluated with the same underlying trip dataset, which is a major strength of the system.
+Due to the decision to not include data base logic, the module also handles the persistence of user data and bookings to external files.
 
+\subsection{Object-Oriented Design Decisions}
+The use of separate modules in this design allows the ranking system to operate independently from the web interface, which allowed for better organization and maintainability. 
+A majority of the deeper OOP design decisions were made in the priority evaluation and ranking system, which is the core of the application.
+Inheritance, composition, and dynamic behaviour are all relevant to the project. Showing it's dynamic nature, a user can maintain a priority hierarchy that changes at runtime and is not fixed once created. 
+Designing priorities in a user specific hierarchy also allows a system to run with simultaneous users and allows each to hold its own preferences.
 
-- Explain the modular project structure and module responsibilities.
+In designing the priority system, implementing an abstract \texttt{EvaluationMethod} to be overwritten by the \texttt{Binary} Evaluation class 
+and the \texttt{Comparative} Evaluations class within the priority object allows Trip scoring to adapt to different priority types without changing the wider application model.
 
-- Introduce the main classes and their relationships.
-
-- Justify object-oriented design decisions.
-
-- Discuss relevant inheritance, composition, decorators and dynamic behaviour.
-
-
+The application also demonstrates composition through the relationship between a user and their saved priorities, and between a trip and its underlying attributes. 
+The design allows multiple traveller profiles to be evaluated with the same underlying trip dataset, while giving each weighted priority hierarchy a different result for the same query
 
 \section{Data Management and Validation}
-- Describe the dataset, its structure and contents.
+The dataset for this program is stored in a CSV file, with each row representing a bus trip and its associated attributes.
+The columns include the following information:
+\begin{itemize}[nosep]
+\item \texttt{offer\_id} Required
+\item \texttt{company} Required
+\item \texttt{destination} Required
+\item \texttt{travel\_date} Required
+\item \texttt{arrival\_date} Required
+\item \texttt{departure\_time} Required
+\item \texttt{arrival\_time} Required
+\item \texttt{duration\_minutes} Required
+\item \texttt{price\_euro} Required
+\item \texttt{transfers} Required
+\item \texttt{transfer\_via} Optional
+\item \texttt{luggage\_allowance\_kg} Required
+\item \texttt{changeable} Required
+\item \texttt{refundable} Required
+\item \texttt{available\_seats} Required
+\item \texttt{customer\_rating} Required
+\item \texttt{rating\_scale\_max} Required
+\item \texttt{environmental\_measure\_kg\_co2e\_per\_passenger} Optional
+\end{itemize}
 
-- Explain CSV loading and type conversion.
+The contents of the supplied dataset are a collection of bus trip offers from various companies, accross different destinations and dates. 
+The given Information on 5 different Sample companies and 15 different valid destinations allowed for the generation of this data.
 
-- Describe validation of invalid, missing and inconsistent records.
+Each CSV row is checked field by field: Ensures required ID exists, a valid company and destination are given based on the 5 given companies and 15 given destinations, sensible and valid dates and times are given for departure and arrival, valid numeric values and ranges for fields like price, trip duration,number of transfers, luggage allowance, etc.., validates boolean fields are true or false, and a rating that fits its scale. Optional environmental-impact data is parsed when present. 
+If the checks pass, the function converts the values to suitable Python types and creates a Trip object. If any validation fails, the row is rejected and the reason for rejection is logged to an external file \texttt{error.output}.
 
-- Explain error handling, custom exceptions and logging.
+In the provided dataset, there are a total of 125 Trips with 8 Trips being invalid.
+The 8 invalid trips were rejected due to the following reasons:
+\begin{itemize}[nosep]
+  \item Invalid price data. Price can not be a negative value.
+  \item Invalid trip destination.
+  \item Invalid date given with a month of 13, which is not a valid month.
+  \item Arrival Date occurs before the departure date, which is not a valid trip.
+  \item Invalid customer rating data.
+  \item There needs to be at least 1 available seat for a trip to be valid.
+  \item Price is a mandatory field and cannot be empty.
+  \item A negative number of transfers is impossible for a valid trip
+\end{itemize}
 
-- Discuss how invalid records are handled.
+An important note is that the dataset was generated by AI and is not based on real-world data. As such, it may contain unrealistic or inconsistent values but seems to have semi realisitic travel times, and functions for the purpose of demonstrating the application's functionality.
 
-\section{Search, Filtering and Weighted Ranking}
+\section{Weighted Ranking, Searching, Filtering}
+\subsection{Weighted Ranking Methodology}
+When a user has a certain idea of the priorities the focus on in a trip are for example 
+Price, Flexibility, Low transfers, short duration, Departure time after 17:00. We can establish a structure that has 100 points and to allow them to rank each priorities 
+importance in respect to a percentage of points. in the following weight:
+
+\begin{itemize}
+  \item Price 37
+  \item Flexibility 26
+  \item Low transfers 19
+  \item Short duration 11
+  \item Departure time after 17:00 7
+\end{itemize}
+
+For this example we can establish 5 test trips as follows:
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{llccrccc}
+\toprule
+Company & Destination & \shortstack{Departure\\time}
+& \shortstack{Duration\\(min)} & \shortstack{Price\\(EUR)}
+& Transfers & Changeable & Refundable \\
+\midrule
+Camino Express & Barcelona & 15:15 & 399 & 89.64 & 0 & FALSE & FALSE \\
+CostaLink      & Barcelona & 13:30 & 484 & 60.25 & 0 & FALSE & TRUE  \\
+VerdeBus       & Barcelona & 11:00 & 513 & 63.56 & 0 & FALSE & FALSE \\
+NocheVia       & Barcelona & 20:15 & 617 & 53.40 & 1 & TRUE  & FALSE \\
+NocheVia       & Barcelona & 21:15 & 623 & 57.22 & 1 & FALSE & TRUE \\
+\bottomrule
+\end{tabular}
+\caption{Example bus journeys to Barcelona.}
+\label{tab:barcelona-trips}
+\end{table}
+
+With this hierarchy we see two things: some are measured binarily, and others need a comparison to determine their quality (i.e. what is a lower price in this context).
+
+If we determine average price, and duration of the trips given in an applicable list we can compare the deviation from the average as the percent of its weighted points a priority is awarded
+The trip with the lowest price should be given 100% of the 37 points while the average be given 18.5 and the most expensive be given 0
+the same can be said for the duration and number of transfers
+
+The binary priorities are simple, if it meets the criteria we give it whole portion of points so departure after a specific time is yes or no. 
+
+Flexibility is slightly more complicated but we can decide to categorize it as 60%/40% refundability to changeability as it makes sense that refunds can be more valuable than changing a booking. So if a trip allows changes but not refunds it would get 40% of the 26 points given.
+
+With this specific scale and Trip data, we have:
+- max price of 89.64 and a min of 53.40 
+- trip duration max: 623 and min: 399
+- transfers max: 1 and min: 0
+
+With these scales and specific trip data the design decision is to use the min max normalization formula $$X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}}$$ to determine relative value. The problem here is it is not universal: A low Price is good, but a low customer rating is not. For fields where lower values are better we can take the 1 - the normalization to get an appropriate scale.
+
+Trip 1: 
+- Price:  $$X_{price} = 1 -  \left(\frac{89.64 - 53.40}{89.64 - 53.40}\right) = 0$$ so this one gets 0 of 37 points
+
+- Flexibility: This is easy enough it has no refunds and no change so $$0.6\left( 0 \right)  + 0.4\left( 0 \right) = 0$$
+
+- Transfers: There are none so  $$X_{transfers} = 1 - \left(  \frac{0 - 0}{1 - 0} \right) = 1$$ so we get all 19 points here
+
+- Duration: This has the shortest duration so we have $$X_{duration} = 1 - \left(\frac{399 - 399}{623 - 399} \right) = 1$$ so we get all 11 points here
+
+- Departure time after 17:00: this trip departs at 15:15 so it does not meet this expectation: so it gets 0% of 7 = 0 points
+
+Trip 1: point total =  30 / 100 Meaning this is not a great fit.
+
+
+Doing this for all 5 trips we get the following results:
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrrrrr}
+\toprule
+Company & Price & Flexibility & Transfers & Duration & Departure Time & Total Score \\
+\midrule
+Camino Express & 0.00 & 0.00 & 19.00 & 11.00 & 0.00 & 30.00 \\
+CostaLink      & 30.01 & 15.60 & 19.00 & 6.83 & 0.00 & 71.44 \\
+VerdeBus       & 26.62 & 0.00 & 19.00 & 5.40 & 0.00 & 51.02 \\
+NocheVia       & 37.00 & 10.40 & 0.00 & 0.29 & 7.00 & 54.69 \\
+NocheVia       & 33.10 & 15.60 & 0.00 & 0.00 & 7.00 & 55.70 \\
+\bottomrule
+\end{tabular}
+\caption{Example bus journeys to Barcelona with their respective scores.}
+\label{tab:barcelona-trips-scores}
+\end{table} 
+
+We now have a robust way of scoring and ranking trips based on a user's weighted priorities. 
+The benefit of allowing the user to assign a fully customizable weight is that even if another user ranks those priorities 
+in the same order, if they have slighlty different distributions they will get different score values.
+
+\subsubsection{Code implementation}
+
 - Explain the search and filtering process.
 
 - Describe hard constraints versus soft preferences.
