@@ -1,0 +1,12 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{}%
+\contentsline {section}{\numberline {2}Requirements and Problem Interpretation}{2}{}%
+\contentsline {section}{\numberline {3}System Architecture and Software Design}{3}{}%
+\contentsline {subsection}{\numberline {3.1}Data Flow Diagram}{3}{}%
+\contentsline {subsubsection}{\numberline {3.1.1}Trip Data Ingestion and Storage}{4}{}%
+\contentsline {subsubsection}{\numberline {3.1.2}Priority Evaluation and Ranking System}{4}{}%
+\contentsline {section}{\numberline {4}Data Management and Validation}{4}{}%
+\contentsline {section}{\numberline {5}Search, Filtering and Weighted Ranking}{4}{}%
+\contentsline {section}{\numberline {6}Web Interface and Booking Functionality}{5}{}%
+\contentsline {section}{\numberline {7}Testing and Experimental Results}{5}{}%
+\contentsline {section}{\numberline {8}Traveller Profile Comparisons}{5}{}%
+\contentsline {section}{\numberline {9}Critical Evaluation and Limitations}{6}{}%
