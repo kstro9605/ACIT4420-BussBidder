@@ -48,46 +48,41 @@
 \newpage
 
 \section{Introduction}
-BusBidder Spain is a simulated bus-booking marketplace that allows users to compare offers 
-from five fictional bus companies. Its purpose is to simplify journey selection by 
-filtering unsuitable offers and ranking the remaining options according to individual user's priorities.
+BusBidder is a bus-booking marketplace that allows users to compare offers
+from five bus companies. It tries to simplify journey selection by
+filtering unsuitable offers and ranking the remaining options based on user's priorities.
 
-Comparing bus offers can be difficult because the cheapest ticket isn't necessarily the best choice. 
-Differences in journey duration, departure times, transfers, and ticket flexibility 
-can significantly affect an offer's value in the eyes of a user. An additional problem is that very few users will agree 
-on what matters most for a trip to be worthwhile.
+Comparing bus offers is difficult because the cheapest ticket isn't necessarily the best choice.
+Differences in duration, departure times, transfers, and flexibility
+can affect an offer's value to a user. Few users agree on what matters most for a trip.
 
-BusBidder's main objective is to provide personalised filtering and a weighted ranking system,  that will help
+BusBidder's objective is to provide personalised filtering and a weighted ranking system, that'll help
 travellers identify the most suitable journey based on their requirements and priorities.
 
 \section{Requirements and Problem Interpretation}
 
-The application detailed throughout this report attempts to achieve this object by:
+The application achieves this by:
 \begin{itemize}[nosep]
 \item loading and validating Trip data
-\item removing Trips that do not meet hard constraints set by users
+\item removing Trips that don't meet hard constraints set by users
 \item scoring the remaining offers using a weighted ranking model set forth by individual users
 \item presenting explainable recommendation
 \item supporting simulated bookings for multiple users
 \end{itemize}
 
-The application uses a modular, object-oriented Python design to separate functional responsibilities 
-such as data management, validation, filtering, scoring, and booking. 
-A weighted scoring model allows different criteria to be normalised and combined into a measurable score. 
-This scoring and its composition is created in a way that isaccessible and can be referenced outside of internal objects in a way that allows 
+The application uses a modular, object-oriented Python design to separate functional responsibilities
+such as data management, validation, filtering, scoring, and booking.
+A weighted scoring model allows different criteria to be normalised and combined into a measurable score.
+This scoring and its composition is created in a way that isaccessible and can be referenced outside of internal objects in a way that allows
 explanation of ranking to users.
 
-An important consideration in this applications design is Hard versus Sorft Constraints. 
-Hard constraints determine whether an offer is acceptable and 
-can be set as a hard constraint by the user on any field given such as destination, travel dates, budget and seat availability. 
-Preferences, such as lower prices, shorter journeys, convenient departure times and ticket flexibility, 
-can be Soft constraints left to the user to decide if the influence the ranking 
-but do not automatically exclude an offer from being listed.
+A consideration in this applications design is Hard versus Sorft Constraints.
+Hard constraints determine whether an offer is acceptable and
+can be set as a hard constraint by the user on any field given such as destination, travel dates, budget and seat availability.
+Preferences, such as lower prices, shorter journeys, convenient departure times and ticket flexibility,
+can be Soft constraints left to the user to decide if the influence the ranking
+but don't automatically exclude an offer from being listed.
 
-
-BusBidder attempts to address the aforementioned requirements through a modular application that processes travel data, 
-validates its quality, applies mandatory filtering and ranks suitable offers using configurable priorities. 
-The resulting recommendations aim to be transparent, consistent, and adaptable to different user profiles.
 
 \newpage
 \section{System Architecture and Software Design}
@@ -103,34 +98,31 @@ The resulting recommendations aim to be transparent, consistent, and adaptable t
 \clearpage
 
 \subsubsection{Trip Data Ingestion and Storage}
-The project structure includes two key modules for reading data and storing it for application processing. The file \texttt{dataLoader.py} is responsible for loading the trip data via an CSV data file \texttt{data/trips.csv}. 
-The \texttt{dataLoader.py} validates it row by row rejecting and reporting failed imports along with reasoning for rejection before they are converted into \texttt{Trip} objects. The file \texttt{tripsService.py} then manages the storage of \texttt{Trip} objects, and then implements the system for querying stored trips, and is also responsible for exporting booking information to external files. 
+The file \texttt{dataLoader.py} loads trip data from the CSV file \texttt{data/trips.csv}.
+The \texttt{dataLoader.py} validates it row by row rejecting and reporting failed imports along with reasoning for rejection before they are converted into \texttt{Trip} objects. The file \texttt{tripsService.py} then manages the storage of \texttt{Trip} objects, and then implements the system for querying stored trips, and is also responsible for exporting booking information to external files.
 
 \subsubsection{Priority Evaluation and Ranking System}
-The module \texttt{priority.py} is the primary point of determining a scoring of trips. It defines priority types, qualifiers, and evaluation methods and metrics. 
-The module \texttt{priorityHierarchy.py} stores and manages the adding and removing of Priority objects and their associated weights, and is how the user initiates a scoring. 
-The file \texttt{scoreObject.py} contains the objects used to represent a trip's score and the breakdown of each priority contribution. 
+The module \texttt{priority.py} determines trip scores and defines priority types, qualifiers, and evaluation methods.
+The module \texttt{priorityHierarchy.py} manages priorities and their weights and initiates scoring.
+The file \texttt{scoreObject.py} stores trip scores and priority breakdowns.
 
 \subsubsection{User Management and Graphical Interface}
-The class definitions in \texttt{user.py} handle the user account data and model, stores a users weighted priorities; and also establishes a definition of a \texttt{Booking} object. 
-The \texttt{webInterface.py} Module is the most complex module in the project, and is where the Flask application is defined and run and exports failed data imports and reasoning to the external file \texttt{error.output}. 
-It is responsible for exposing the application routes and page rendering logic. It also handles the user input, validating it and querying the data against it. 
-It is through this module that the user can create an account, log in, and save their priority hierarchy, and search for trips have the system display a ranked list of results. 
+The class definitions in \texttt{user.py} handle the user account data and model, stores a users weighted priorities; and also establishes a definition of a \texttt{Booking} object.
+The \texttt{webInterface.py} module defines and runs the Flask application and exports failed data imports and reasoning to the external file \texttt{error.output}.
+It's responsible for exposing the application routes and page rendering logic. It also handles the user input, validating it and querying the data against it.
+It's through this module that the user can create an account, log in, and save their priority hierarchy, and search for trips have the system display a ranked list of results.
 The user can then select a trip to book, and the system will save the fare conditions associated with the booking information and tie it to a unique booking reference utilizing the an incrementor and the offerID while updating the Trip data to reduce the number of available seats/capacity.
 
 Due to the decision to not include data base logic, the module also handles the persistence of user data and bookings to external files.
 
 \subsection{Object-Oriented Design Decisions}
-The use of separate modules in this design allows the ranking system to operate independently from the web interface, which allowed for better organization and maintainability. 
-A majority of the deeper OOP design decisions were made in the priority evaluation and ranking system, which is the core of the application.
-Inheritance, composition, and dynamic behaviour are all relevant to the project. Showing it's dynamic nature, a user can maintain a priority hierarchy that changes at runtime and isn't fixed once created. 
-Designing priorities in a user specific hierarchy also allows a system to run with simultaneous users and allows each to hold its own preferences.
+The use of separate modules in this design allows the ranking system to operate independently from the web interface, which allowed for better organization and maintainability.
+Most OOP design decisions concern the priority evaluation and ranking system, the application's core.
+Inheritance, composition, and dynamic behaviour are relevant to the project. A user can maintain a priority hierarchy that changes at runtime and isn't fixed once created.
+Designing priorities in a user specific hierarchy allows simultaneous users to hold their own preferences.
 
-In designing the priority system, implementing an abstract \texttt{EvaluationMethod} to be overwritten by the \texttt{Binary} Evaluation class 
-and the \texttt{Comparative} Evaluations class within the priority object allows Trip scoring to adapt to different priority types without changing the wider application model.
-
-The application also demonstrates composition through the relationship between a user and their saved priorities, and between a trip and its underlying attributes. 
-The design allows multiple traveller profiles to be evaluated with the same underlying trip dataset, while giving each weighted priority hierarchy a different result for the same query
+In designing the priority system, implementing an abstract \texttt{EvaluationMethod} to be overwritten by the \texttt{Binary} Evaluation class
+and the \texttt{Comparative} Evaluations class within the priority object allows Trip scoring to adapt to different priority types without changing the application model.
 
 \newpage
 \section{Data Management and Validation}
@@ -157,10 +149,10 @@ The columns include the following information:
 \item \texttt{environmental\_measure\_kg\_co2e\_per\_passenger} Optional
 \end{itemize}
 
-The contents of the supplied dataset are a collection of bus trip offers from various companies, accross different destinations and dates. 
-The given Information on 5 different Sample companies and 15 different valid destinations allowed for the generation of this data.
+The contents of the supplied dataset are a collection of bus trip offers from various companies, accross different destinations and dates.
+Information on 5 sample companies and 15 valid destinations allowed for the generation of this data.
 
-Each CSV row is checked field by field: Ensures required ID exists, a valid company and destination are given based on the 5 given companies and 15 given destinations, sensible and valid dates and times are given for departure and arrival, valid numeric values and ranges for fields like price, trip duration,number of transfers, luggage allowance, etc.., validates boolean fields are true or false, and a rating that fits its scale. Optional environmental-impact data is parsed when present. 
+Each CSV row is checked field by field: Ensures required ID exists, a valid company and destination are given based on the 5 given companies and 15 given destinations, sensible and valid dates and times are given for departure and arrival, valid numeric values and ranges for fields like price, trip duration,number of transfers, luggage allowance, etc.., validates boolean fields are true or false, and a rating that fits its scale. Optional environmental-impact data is parsed when present.
 If the checks pass, the function converts the values to suitable Python types and creates a Trip object. If any validation fails, the row is rejected and the reason for rejection is logged to an external file \texttt{error.output}.
 
 In the provided dataset, there are a total of 125 Trips with 8 Trips being invalid.
@@ -172,35 +164,32 @@ The 8 invalid trips were rejected due to the following reasons:
   \item Arrival Date occurs before the departure date, which isn't a valid trip.
   \item Invalid customer rating data.
   \item There needs to be at least 1 available seat for a trip to be valid.
-  \item Price is a mandatory field and cannot be empty.
+  \item Price is a mandatory field and can't be empty.
   \item A negative number of transfers is impossible for a valid trip
 \end{itemize}
-
-An important note is that the dataset was generated by AI and isn't based on real-world data. As such, it may contain unrealistic or inconsistent values but seems to have semi realisitic travel times, and functions for the purpose of demonstrating the application's functionality.
 
 \newpage
 \section{Searching, Filtering, and Scoring Methodology}
 \subsection{Searching and Filtering Trip data}
-The \texttt{tripsService.py} module is responsible for searching and filtering the stored trip data. It provides methods to query trips based on user-defined criteria, 
-such as destination, travel date, departure time, and other attributes. 
-But None of the parameters are required allowing queries to be range from very general to very specific. The filtering process involves iterating through the list of stored trips
-and applying the specified filters to return a subset of trips that match the user's search options. 
-If no options are given, the system will return all trips in the dataset.
-The User is able to make these queries through the web interface, where they can select their desired criteria 
-and submit the search. Any specified filters are applied to the trip search and any trip that does not meet the criteria is excluded from the results. 
+The \texttt{tripsService.py} module is responsible for searching and filtering the stored trip data. It provides methods to query trips based on user-defined criteria,
+such as destination, travel date, departure time, and other attributes.
+But none of the parameters are required, allowing queries to range from general to specific.
+If no options are given, it'll return all trips in the dataset.
+The User is able to make these queries through the web interface, where they can select their desired criteria
+and submit the search. Any specified filters are applied to the trip search and any trip that doesn't meet the criteria is excluded from the results.
 
-It is in this Search form, that we create "hard constraints" as any trip that doesnt meet a user's supplied constraints should not be displayed to the user. 
-For example if a user is searching to book a trip for the dates 11-04-2027 and 11-08-2027 there is no reason we should be showing them a trip for the 15th. 
+It's in this Search form, that we create "hard constraints" as any trip that doesn't meet a user's supplied constraints shouldn't be displayed to the user.
+A search for 11-04-2027 to 11-08-2027 shouldn't show a trip on the 15th.
 For the implementation of a "soft constraint" we use the weighted ranking system to score and rank trips based on a user's preferences,
 allowing them to still see non optimal results but display the best options first.
 
 The system setup with allowing a User to have their priorities saved to their account while also allowing them to make rigid searches with hard constraints allows for a flexible and personalized experience.
-Say a user has a priority set for Lower prices but also knows they cant spend more than 45 Euros, 
+Say a user has a priority set for Lower prices but also knows they can't spend more than 45 Euros,
 The web form implementation allows them to prevent any trips costing over 45 from being displayed while also displaying trips in a price minded order as well.
 
 \subsection{Weighted Ranking Methodology}
-When a user has a certain idea of the priorities the focus on in a trip are for example 
-Price, Flexibility, Low transfers, short duration, Departure time after 17:00. We can establish a structure that has 100 points and to allow them to rank each priorities 
+When a user has a certain idea of the priorities the focus on in a trip are for example
+Price, Flexibility, Low transfers, short duration, Departure time after 17:00. We can establish a structure that has 100 points and to allow them to rank each priorities
 importance in respect to a percentage of points. in the following weight:
 
 \begin{itemize}
@@ -223,49 +212,49 @@ Company & Destination & \shortstack{Departure\\time}
 & Transfers & Changeable & Refundable \\
 \midrule
 Camino Express & Barcelona & 15:15 & 399 & 89.64 & 0 & FALSE & FALSE \\
-CostaLink      & Barcelona & 13:30 & 484 & 60.25 & 0 & FALSE & TRUE  \\
-VerdeBus       & Barcelona & 11:00 & 513 & 63.56 & 0 & FALSE & FALSE \\
-NocheVia       & Barcelona & 20:15 & 617 & 53.40 & 1 & TRUE  & FALSE \\
-NocheVia       & Barcelona & 21:15 & 623 & 57.22 & 1 & FALSE & TRUE \\
+CostaLink & Barcelona & 13:30 & 484 & 60.25 & 0 & FALSE & TRUE \\
+VerdeBus & Barcelona & 11:00 & 513 & 63.56 & 0 & FALSE & FALSE \\
+NocheVia & Barcelona & 20:15 & 617 & 53.40 & 1 & TRUE & FALSE \\
+NocheVia & Barcelona & 21:15 & 623 & 57.22 & 1 & FALSE & TRUE \\
 \bottomrule
 \end{tabular}
 \caption{Example bus journeys to Barcelona.}
 \label{tab:barcelona-trips}
 \end{table}
 
-With this hierarchy we see two things: some are measured binarily, and others need a comparison to determine their quality (i.e. what is a lower price in this context).
+With this hierarchy we see two things: some are measured binarily, and others need a comparison to determine their quality (i.e. what's a lower price in this context).
 
 If we determine minimum and maximum price, and duration of the trips given in an applicable list we can utilize the min max normalization formula to determine the percent of its weighted points a priority is awarded
 The trip with the lowest price should be given 100% of the 37 points while the average be given 18.5 and the most expensive be given 0
 the same can be said for the duration and number of transfers
 
-The binary priorities are simple, if it meets the criteria we give it whole portion of points so departure after a specific time is yes or no. 
+Binary priorities award full points when criteria are met, such as a departure after a specified time.
 
-Flexibility is slightly more complicated but we can decide to categorize it as 60%/40% refundability to changeability as it makes sense that refunds can be more valuable than changing a booking. So if a trip allows changes but not refunds it would get 40% of the 26 points given.
+Flexibility is more complicated, but we can categorize it as 60%/40% refundability to changeability, since refunds can be more valuable than changing a booking. So if a trip allows changes but not refunds it'd get 40% of the 26 points given.
 
-With this specific scale and Trip data, we have:
+With this scale and Trip data, we have:
 
-- max price of 89.64 and a min of 53.40 
+- max price of 89.64 and a min of 53.40
 
 - trip duration max: 623 and min: 399
 
 - transfers max: 1 and min: 0
 
 
-With these scales and specific trip data the design decision is to use the min max normalization formula $$X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}}$$ to determine relative value. The problem here is it isn't universal: A low Price is good, but a low customer rating isn't. For fields where lower values are better we can take the 1 - the normalization to get an appropriate scale.
+With these scales and trip data, the design decision is to use the min max normalization formula $$X_{norm} = \frac{X - X_{min}}{X_{max} - X_{min}}$$ to determine relative value. The problem here is it isn't universal: A low Price is good, but a low customer rating isn't. For fields where lower values are better we can take the 1 - the normalization to get an appropriate scale.
 
-Trip 1: 
-- Price:  $$X_{price} = 1 -  \left(\frac{89.64 - 53.40}{89.64 - 53.40}\right) = 0$$ Pricing: 0 of 37 points
+Trip 1:
+- Price: $$X_{price} = 1 - \left(\frac{89.64 - 53.40}{89.64 - 53.40}\right) = 0$$
 
-- Flexibility: Trip has no refunds or changability so $$0.6\left( 0 \right)  + 0.4\left( 0 \right) = 0$$
+- Flexibility: Trip has no refunds or changability so $$0.6\left( 0 \right) + 0.4\left( 0 \right) = 0$$
 
-- Transfers: No transfers  $$X_{transfers} = 1 - \left(  \frac{0 - 0}{1 - 0} \right) = 1$$ Transfers: 19 points 
+- Transfers: No transfers $$X_{transfers} = 1 - \left( \frac{0 - 0}{1 - 0} \right) = 1$$ Transfers: 19 points
 
-- Duration: This has the shortest duration $$X_{duration} = 1 - \left(\frac{399 - 399}{623 - 399} \right) = 1$$ All 11 points are awarded
+- Duration: This has the shortest duration $$X_{duration} = 1 - \left(\frac{399 - 399}{623 - 399} \right) = 1$$ 11 points
 
-- Departure time after 17:00: this trip departs at 15:15 so it does not meet this expectation: so it gets 0% of 7 = 0 points
+- Departure time after 17:00: this trip departs at 15:15 so it doesn't meet this expectation: 0 points
 
-Trip 1: point total =  30 / 100 Meaning this trip is not a great fit.
+Trip 1: point total = 30 / 100 Meaning this trip isn't a great fit.
 
 
 Doing this for all 5 trips we get the following results:
@@ -278,38 +267,38 @@ Doing this for all 5 trips we get the following results:
 Company & Price & Flexibility & Transfers & Duration & Departure Time & Total Score \\
 \midrule
 Camino Express & 0.00 & 0.00 & 19.00 & 11.00 & 0.00 & 30.00 \\
-CostaLink      & 30.01 & 15.60 & 19.00 & 6.83 & 0.00 & 71.44 \\
-VerdeBus       & 26.62 & 0.00 & 19.00 & 5.40 & 0.00 & 51.02 \\
-NocheVia       & 37.00 & 10.40 & 0.00 & 0.29 & 7.00 & 54.69 \\
-NocheVia       & 33.10 & 15.60 & 0.00 & 0.00 & 7.00 & 55.70 \\
+CostaLink & 30.01 & 15.60 & 19.00 & 6.83 & 0.00 & 71.44 \\
+VerdeBus & 26.62 & 0.00 & 19.00 & 5.40 & 0.00 & 51.02 \\
+NocheVia & 37.00 & 10.40 & 0.00 & 0.29 & 7.00 & 54.69 \\
+NocheVia & 33.10 & 15.60 & 0.00 & 0.00 & 7.00 & 55.70 \\
 \bottomrule
 \end{tabular}
 \caption{Example bus journeys to Barcelona with their respective scores.}
 \label{tab:barcelona-trips-scores}
-\end{table} 
+\end{table}
 
-We now have a robust way of scoring and ranking trips based on a user's weighted priorities. 
-The benefit of allowing the user to assign a fully customizable weight is that even if another user ranks those priorities 
-in the same order, if they have slighlty different distributions they will get different score values.
+We now have a way to score and rank trips based on a user's weighted priorities.
+The benefit of allowing the user to assign a customizable weight is that even if another user ranks those priorities
+in the same order, different distributions produce different scores.
 
 \subsubsection{Code implementation}
 Utilizing the Web form in the \texttt{webInterface.py} module, the user can select their priorities and assign weights to them,
-in an intuitive graphical interface portrayed as a pie chart.
-One the user submits their preferences, the system will validate the input and create a \texttt{PriorityHierarchy} 
-object with the user's priorities and weights. Deeper within the \texttt{priority.py} module, each priority is created with a relevant weight and in cases where it is needed
+in a graphical interface portrayed as a pie chart.
+One the user submits their preferences, the system will validate the input and create a \texttt{PriorityHierarchy}
+object with the user's priorities and weights. Deeper within the \texttt{priority.py} module, each priority is created with a relevant weight and in cases where it's needed
 a \texttt{Qualifer} object is created to add an operator and a value to compare a trips data against to give its scoring a bit more context for what a user values.
 A good example of the qualifier is the departure time after 17:00 priority, which has a qualifier of operator of "Later than" and value 17:00. so it knows a custom value to score a trip against.
-Each \texttt{Priority} Object has an attribute \texttt{PriorityType} which maps it to a given Trip attribute and designates a specific evaluation method. 
-The PriorityType is an Enum that is used to determine which evaluation method to use for a given priority, 
-there are two evaluation methods, Binary and Comparative, and that is used to determine the scoring metric to score Trips.
+Each \texttt{Priority} Object has an attribute \texttt{PriorityType} which maps it to a given Trip attribute and designates a specific evaluation method.
+The PriorityType is an Enum that's used to determine which evaluation method to use for a given priority,
+there are two evaluation methods, Binary and Comparative, and that's used to determine the scoring metric to score Trips.
 
 \texttt{Comparative} evaluates attributes such as price relative to the other matching trips, while \texttt{Binary} evaluates conditions such as whether a departure meets a specified time preference.
 
 \newpage
 \section{Web Interface and Booking Functionality}
 This application design has opted to utilize Flask and Jinja for a web interface for user interaction. the Flask Application structure uses python
-Decorator functions such as \texttt{ @app.route("/booking", methods=["GET", "POST"])} to route the user to several pages
-allowing a user to customize the flow through functionality and improves the experience by allowing them to search through the Trip data even when not logged in. 
+Decorator functions such as \texttt{ @app.route("/booking", methods=["GET", "POST"])} to route the user to pages
+allowing a user to customize the flow through functionality and improves the experience by allowing them to search through the Trip data even when not logged in.
 The application has several routes for the user to navigate:
 \begin{itemize}
 \item An index page that allows navigation to most other pages.
@@ -323,22 +312,21 @@ The application has several routes for the user to navigate:
 
 These pages are HTML Flask pages using Jinja Scriptlets to easily acess the python objects, and are styled and given JavaScript interactivity through external scripts.
 All of these pages exist in the \texttt{./templates} directory, and their styling and JavaScript files are in \texttt{./static} directory.
-Excluding the Jinja python scriptlets, these files were generated with AI with many manual modifications made as well as web development capabilities are outside of the scope of this assignment.
 
 \newpage
 \section{Testing and Experimental Results}
-The testing for this application uses Python's built in unittest modules. 
+The testing for this application uses Python's built in unittest modules.
 
-the \texttt{testing/data\_loading/test\_dataLoader\_unittest.py} checks valid and invalid files, empty files, dates before today, 
-and whether invalid rows produce errors. 
-That folder also contains testing data that intentionally is formatted both correctly and incorrectly, 
-and utilizes the robust error validation in the \texttt{dataLoader.py}'s data ingestion to catch all invalid rows
+the \texttt{testing/data\_loading/test\_dataLoader\_unittest.py} checks valid and invalid files, empty files, dates before today,
+and whether invalid rows produce errors.
+That folder also contains testing data that intentionally is formatted both correctly and incorrectly,
+and utilizes the error validation in the \texttt{dataLoader.py}'s data ingestion to catch all invalid rows
 to cover invalid, boundary, and missing data-cases.
 
 \texttt{testing/trip\_scoring/test\_trip\_scoring\_unittest.py} checks priority weight limits, duplicate priorities, missing time qualifiers,
 and that scores and breakdowns are produced.
-Theses tests validate the backbone of this applications scoring metrics and also verifies that our weight based scoring 
-can systemically organize trip data into relevant to less relevant trip data on a per user basis. 
+Theses tests validate this application's scoring metrics and also verify that our weight-based scoring
+can systemically organize trip data into relevant to less relevant trip data on a per user basis.
 The final tests in this module validate that two different user with different priorities rank the test data in a different order.
 
 Console output for the entire testing suite is included in the Appendix.
@@ -347,154 +335,139 @@ Console output for the entire testing suite is included in the Appendix.
 \centering
 \includegraphics[width=\textwidth]{priority_top_scoring_trip_test_result.png}
 \caption{Console output showing different top-ranked trips for two traveller priority profiles.}
-\label{fig:priority-test-output}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{default_user_priority_test.png}
 \caption{Unit test code showing the budget minded users priority weighting.}
-\label{fig:priority-test_default-code}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{scoring_difference_code.png}
 \caption{Unit test code comparing trip rankings for budget-minded and duration-minded users.}
-\label{fig:priority-test-code}
 \end{figure}
 
 
-The ranking system appears to be validated in the score deviation for the same trips when given the context of the different user's priority weighting.
-Not only is the first recommended trip different between the two; the score of relevance between the two seems drastically different considering
-the only change is the weight given to the duration and prices of a trip leaving the other priorities the same.
+The ranking system works in the scoring of deviation for the same trips when given the context of the different user's priority weighting.
+Not only is the first recommended trip different between the two; the relevance scores differ considering
+only the weight given to the duration and prices have changed.
 
 \newpage
 \section{Traveller Profile Comparisons}
-For demonstrative purposes we will use three different Traveller profiles, and the application has made it possible for users to set a site themeing an a by-user basis
-allowing this report to more easily distinguish between the users.
+We'll compare three traveller profiles, with a different theme for each user.
 
   \begin{itemize}
-  \item \textbf{Budget-focused traveller}: prioritises low price, departures after work at 18:00, and flexibility so if something changes they do not lose money.
+  \item \textbf{Budget-focused traveller}: prioritises low price, departures after work at 18:00, and flexibility so if something changes they don't lose money.
     \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{budget_priority_list.png}
     \caption{Priorities and weights of the Budget Minded user}
-    \label{fig:priority-test-code}
     \end{figure}
   \item \textbf{Business traveller}: prioritises time efficiency, travel quality, and fewer transfers.
     \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{business_priorities.png}
     \caption{Priorities and weights of the Business user}
-    \label{fig:priority-test-code}
     \end{figure}
   \item \textbf{Environmental-focused tourist}: prioritises lower Carbon impact, shorter duration, and fewer transfers.
     \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{ecominded_priorities.png}
     \caption{Priorities and weights of the Environmental minded user}
-    \label{fig:priority-test-code}
     \end{figure}
   \end{itemize}
 
-If we do a query against the dataset for all trips going anywhere (can be done by not selecting a destination or pressing control while you select destinations) 
-in the time frame of 11-04-2027 to 11-07-2027 we can see our data set returns 71 trips 
+If we do a query against the dataset for all trips going anywhere (can be done by not selecting a destination or pressing control while you select destinations)
+in the time frame of 11-04-2027 to 11-07-2027 we can see our data set returns 71 trips
 for each user we have different ranked results as seen below:
 
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{budget_results.png}
   \caption{Top recommendations of the Budget Minded user}
-  \label{fig:priority-test-code}
   \end{figure}
 
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{business_results.png}
   \caption{Top recommendations of the Business user}
-  \label{fig:priority-test-code}
   \end{figure}
 
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{eco_results.png}
   \caption{Top recommendations of the Environmentally focused user}
-  \label{fig:priority-test-code}
   \end{figure}
 
-In their resulting trip recommendations we can see that they have an order that is unique to each user and the scores are also unique and, as a float value,
-allows for very fine differentiation between trips so they are not just a 8 out of 10 and in the case of the business traveller there are not 8 with the same scoring.
-
-If we look into each users number 1 choice we can also see a break down of the score as well as all other trip informations, so they can decide if this is the trip they wish to book.
+Each user's recommendations have a unique order.
+If we look into each users highest choice we can also see a break down of the scoring as well as all other trip information.
 
  \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{budget_no1_details.png}
   \caption{Top trip of the Budget Minded user}
-  \label{fig:priority-test-code}
   \end{figure}
 
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{business_no1_details.png}
   \caption{Top trip of the Business user}
-  \label{fig:priority-test-code}
   \end{figure}
 
   \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{eco_no1_details.png}
   \caption{Top trip of the Environmentally focused user}
-  \label{fig:priority-test-code}
   \end{figure}
 
 We can see that each of the user's top recommended trips have a score breakdown on how well it meets up with their priorities,
 and they can tell from this alone how well it aligns with their preferences in comparison to other trips. For instance when a comparitive score like
-Environmental Impact, Price, or Customer Rating recieves all points of it's share, the user knows that it is the lowest of the trips in the offering.
+Environmental Impact, Price, or Customer Rating recieves all points of its share, the user knows that it's the lowest of the trips in the offering.
 
-In the case of the budget users highest rated trip, the user can tell from this details pane 
-that while its close to being the cheapest the fact that it is flexible, and departs after the work day, and technically scores higher than the cheapest trip.
-in this example we see the value in the design desicion of adding this weighted scoring over simply allowing the user to sort columns in a table based on price alone.
+In the case of the budget users highest rated trip, the user can tell from this details pane
+that while it's close to being the cheapest the fact that it's flexible, and departs after the work day, and technically scores higher than the cheapest trip.
+in this example we see the value in the design desicion of adding this weighted scoring over allowing the user to sort columns in a table based on price alone.
 
 \newpage
 \section{Critical Evaluation and Limitations}
-The application gains many positive attributes through several design decisions. As a basis for this kind of problem and use case, a web interface makes the most sense
-as it is the most intuitive means for a user to browse trips and details and store information about them selves. It is the most familiar format and as such requires
-little explanation on how to use the program. Secondly the decision to take certain priorities a user might have and allow them to be weighted allows 
-for a more personalized service. As mentioned above, A user would be able to find appropriate trips on their own with a table that allows them to filter on things 
-like Prices, Duration, customer rating, etc. on a scale of low to high or High to low. or a hard check for things like refundability. 
-This approach however only takes one or two things into consideration. The weighted approach as demonstrates a more indepth application that can show a trip 
-that aligns the most across all of the areas a user cares about. this applications design implementation also is modularized enough that future modifications 
-would be trivial to add, like if a new administrator wanted to be able to add a new priority the framework exists in such a state that it would only need to be 
-updated in the priority objects code and then in the front end. Everything else that interacts with this data is generalized enough that it will accept new data 
+As a basis for this kind of problem and use case, a web interface makes the most sense
+as it's an intuitive means for a user to browse trips and details and store information about them selves. It's a familiar format and as such requires
+little explanation on how to use the program. Secondly the decision to take certain priorities a user might have and allow them to be weighted allows
+for a more personalized service. As mentioned above, A user would be able to find appropriate trips on their own with a table that allows them to filter on things
+like Prices, Duration, customer rating, etc. on a scale of low to high or High to low. or a hard check for things like refundability.
+This approach however only takes one or two things into consideration. The weighted approach as demonstrates a more indepth application that can show a trip
+that aligns the most across all of the areas a user cares about. this applications design implementation also is modularized enough that future modifications
+would be trivial to add, like if a new administrator wanted to be able to add a new priority the framework exists in such a state that it'd only need to be
+updated in the priority objects code and then in the front end. Everything else that interacts with this data is generalized enough that it'll accept new data
 if structured in those two places.
 
-This application is, however, limited in a few aspects. Because We are reading in data from a fixed CSV file, our breadth of trip complexity is limited to what is 
-put into that file, and with it being fixed it will eventually be unusable due to Dates being passed. The scoring also leaves its results as a floating value that 
-can technically lead to ties, and it was intentionally decided that a floating point value of 2 decimal places would be sufficient scoring as the user should be 
-able to look at two trips with the exact score and be able to determine on the extra information given by the details page what would be a tie breaker for 
-themselves and accounting for that programmatically would weigh down the user experience and make possibly incorrect assumptions. In it's current state, 
-the established priority system may leave a priority that matters to a user unavailable. While this could be remedied by adding more and more priorities to the list, 
-it was decided for this project that the given priorities would be sufficient also considering the user could manually query the data with anything else that data 
+This application is, however, limited in a few aspects. Because we're reading in data from a fixed CSV file, our breadth of trip complexity is limited to what's
+put into that file, and with it being fixed it'll eventually be unusable due to Dates being passed. The scoring also leaves its results as a floating value that
+can technically lead to ties, and it was intentionally decided that a floating point value of 2 decimal places would be sufficient scoring as the user should be
+able to look at two trips with the exact score and be able to determine on the extra information given by the details page what would be a tie breaker for
+themselves and accounting for that programmatically would weigh down the user experience and make possibly incorrect assumptions. In its current state,
+the established priority system may leave a priority that matters to a user unavailable. While this could be remedied by adding more and more priorities to the list,
+it was decided for this project that the given priorities would be sufficient also considering the user could manually query the data with anything else that data
 in a file may contain.
 
-The Scoring and normalization is fairly robust in it's implementation but there are some decisions made that don't necessarily fit with the current data set. 
-A prime example of this is that we currently score a priority of low number of transfers in a comparative evaluation methodology. 
-In our dataset, trips only have 0 or 1 transfers which would work in a binary evaluation; however, it was a measured decision that it was possible 
-for someone running the program to feed the application data with many transfers, and in that case a binary approach would be insufficient. 
+The scoring and normalization work, but some decisions don't fit the current data set.
+A prime example of this is that we currently score a priority of low number of transfers in a comparative evaluation methodology.
+In our dataset, trips only have 0 or 1 transfers which would work in a binary evaluation; however, it was a measured decision that it was possible
+for someone running the program to feed the application data with many transfers, and in that case a binary approach would be insufficient.
 
-In deciding to also allow a user to set their own priorities we have also introduced a source of bias that while technically correct may come across as an insufficient 
-solution. Assume a user has low carbon impact as a priority and low price as another and has weighed low carbon impact higher than price. 
-They may see results returned for trips that all seem to have the similar impact but one being slightly lower, 
-while another with a significantly lower price then the rest of the trips that has an average impact. 
-How would a user want these results ranked? In this implementation an outlier in lower prices may actually counter weigh the apparent carbon impact 
-as it will significantly reduce the average pointing of trips because the price priority is getting much smaller portions of points to the point where the second lower 
-price is getting significantly less points then a person looking at it would decide to award it. 
-A solution to this could be that every data point now has to look at the average distribution of values and adjust the normalization irrespective of outliers, 
-but is that a better solution? It is possible some users would prefer outliers to have a heavier impact in what is returned. The problem has several solutions 
-but there is no definitive correct path forward, and it is up to the applications design decisions to determine the best path forward; and in this case, 
-I have decided that an outlier should cause a bit of trouble as that is probably what the trip providers is probably hoping will happen.
+In deciding to also allow a user to set their own priorities we've also introduced a source of bias that while technically correct may come across as an insufficient
+solution. Assume a user has low carbon impact as a priority and low price as another and has weighed low carbon impact higher than price.
+They may see results returned for trips that all seem to have the similar impact but one being lower,
+while another with a significantly lower price then the rest of the trips that has an average impact.
+How would a user want these results ranked? In this implementation an outlier in lower prices may counter weigh the apparent carbon impact
+as it'll reduce the average pointing of trips because the price priority is getting smaller portions of points to the point where the second lower
+price is getting significantly less points then a person looking at it would decide to award it.
+A solution to this could be that every data point now has to look at the average distribution of values and adjust the normalization irrespective of outliers,
+but is that a better solution? It's possible some users would prefer outliers to have a heavier impact in what's returned. The problem has several solutions
+but there's no definitive correct path forward, and it's up to the applications design decisions to determine the best path forward; and in this case,
+I've decided that an outlier should cause a bit of trouble as that's probably what the trip providers is probably hoping will happen.
 
 \newpage
 \section{AI Declaration of Use}
@@ -512,4 +485,6 @@ Vs Code's auto code complete was also used to quickly build class and function d
 initalizer function because it was only tedius attribute setting to parameter values   
 but all other logic and design decisions made in the application were made without the aid of the AI tools present in the IDE
 
+AI was used to comb through report to change some words like "it is", "can not", "is not" to their contraction equivalent and remove extra and trailing spaces to clean up report,
+but wording is all still and sentence structure is all still Human.
 \end{document}
