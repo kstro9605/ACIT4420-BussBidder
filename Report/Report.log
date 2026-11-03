@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.11.2)  3 NOV 2026 18:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.11.2)  3 NOV 2026 19:43
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -391,79 +391,84 @@ File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ] [5] [6]
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <5> on input line 219.
- [7] [8{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathex.enc}] [9] [10]
-Overfull \hbox (8.87825pt too wide) in paragraph at lines 331--336
+ [7] [8{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-mathex.enc}] [9]
+Overfull \hbox (44.70006pt too wide) in paragraph at lines 310--315
+\T1/lmr/m/n/10.95 tion. the Flask Ap-pli-ca-tion struc-ture uses python Dec-o-ra-tor func-tions such as  \T1/lmtt/m/n/10.95 @app.route("/booking",
+ []
+
+[10]
+Overfull \hbox (8.87825pt too wide) in paragraph at lines 332--337
 []\T1/lmr/m/n/10.95 the \T1/lmtt/m/n/10.95 testing/data_loading/test_dataLoader_unittest.py \T1/lmr/m/n/10.95 checks valid and in-valid files, empty
  []
 
 <priority_top_scoring_trip_test_result.png, id=51, 575.43283pt x 77.72433pt>
 File: priority_top_scoring_trip_test_result.png Graphic file (type png)
 <use priority_top_scoring_trip_test_result.png>
-Package pdftex.def Info: priority_top_scoring_trip_test_result.png  used on input line 347.
+Package pdftex.def Info: priority_top_scoring_trip_test_result.png  used on input line 348.
 (pdftex.def)             Requested size: 452.9679pt x 61.18451pt.
 <default_user_priority_test.png, id=52, 926.55594pt x 241.35452pt>
 File: default_user_priority_test.png Graphic file (type png)
 <use default_user_priority_test.png>
-Package pdftex.def Info: default_user_priority_test.png  used on input line 354.
+Package pdftex.def Info: default_user_priority_test.png  used on input line 355.
 (pdftex.def)             Requested size: 452.9679pt x 117.99222pt.
 <scoring_difference_code.png, id=53, 889.05736pt x 662.02048pt>
 File: scoring_difference_code.png Graphic file (type png)
 <use scoring_difference_code.png>
-Package pdftex.def Info: scoring_difference_code.png  used on input line 361.
+Package pdftex.def Info: scoring_difference_code.png  used on input line 362.
 (pdftex.def)             Requested size: 452.9679pt x 337.30272pt.
 [11 <./priority_top_scoring_trip_test_result.png> <./default_user_priority_test.png>] [12 <./scoring_difference_code.png>]
 <budget_priority_list.png, id=64, 1195.86397pt x 754.06245pt>
 File: budget_priority_list.png Graphic file (type png)
 <use budget_priority_list.png>
-Package pdftex.def Info: budget_priority_list.png  used on input line 380.
+Package pdftex.def Info: budget_priority_list.png  used on input line 381.
 (pdftex.def)             Requested size: 452.9679pt x 285.62622pt.
 <business_priorities.png, id=65, 987.91727pt x 749.9717pt>
 File: business_priorities.png Graphic file (type png)
 <use business_priorities.png>
-Package pdftex.def Info: business_priorities.png  used on input line 387.
+Package pdftex.def Info: business_priorities.png  used on input line 388.
 (pdftex.def)             Requested size: 452.9679pt x 343.86969pt.
  [13 <./budget_priority_list.png>]
 <ecominded_priorities.png, id=70, 994.05339pt x 742.47198pt>
 File: ecominded_priorities.png Graphic file (type png)
 <use ecominded_priorities.png>
-Package pdftex.def Info: ecominded_priorities.png  used on input line 394.
+Package pdftex.def Info: ecominded_priorities.png  used on input line 395.
 (pdftex.def)             Requested size: 452.9679pt x 338.32376pt.
  [14 <./business_priorities.png>]
 <budget_results.png, id=75, 884.9666pt x 475.89113pt>
 File: budget_results.png Graphic file (type png)
 <use budget_results.png>
-Package pdftex.def Info: budget_results.png  used on input line 406.
+Package pdftex.def Info: budget_results.png  used on input line 407.
 (pdftex.def)             Requested size: 452.9679pt x 243.58716pt.
  [15 <./ecominded_priorities.png>]
 <business_results.png, id=80, 805.19688pt x 559.7516pt>
 File: business_results.png Graphic file (type png)
 <use business_results.png>
-Package pdftex.def Info: business_results.png  used on input line 413.
+Package pdftex.def Info: business_results.png  used on input line 414.
 (pdftex.def)             Requested size: 452.9679pt x 314.89366pt.
 <eco_results.png, id=81, 790.87924pt x 564.52415pt>
 File: eco_results.png Graphic file (type png)
 <use eco_results.png>
-Package pdftex.def Info: eco_results.png  used on input line 420.
+Package pdftex.def Info: eco_results.png  used on input line 421.
 (pdftex.def)             Requested size: 452.9679pt x 323.324pt.
  [16 <./budget_results.png> <./business_results.png>]
 <budget_no1_details.png, id=87, 790.87924pt x 635.43057pt>
 File: budget_no1_details.png Graphic file (type png)
 <use budget_no1_details.png>
-Package pdftex.def Info: budget_no1_details.png  used on input line 432.
+Package pdftex.def Info: budget_no1_details.png  used on input line 433.
 (pdftex.def)             Requested size: 452.9679pt x 363.93475pt.
  [17 <./eco_results.png>]
 <business_no1_details.png, id=92, 776.5616pt x 640.20311pt>
 File: business_no1_details.png Graphic file (type png)
 <use business_no1_details.png>
-Package pdftex.def Info: business_no1_details.png  used on input line 439.
+Package pdftex.def Info: business_no1_details.png  used on input line 440.
 (pdftex.def)             Requested size: 452.9679pt x 373.43787pt.
  [18 <./budget_no1_details.png>]
 <eco_no1_details.png, id=98, 780.65236pt x 640.8849pt>
 File: eco_no1_details.png Graphic file (type png)
 <use eco_no1_details.png>
-Package pdftex.def Info: eco_no1_details.png  used on input line 446.
+Package pdftex.def Info: eco_no1_details.png  used on input line 447.
 (pdftex.def)             Requested size: 452.9679pt x 371.87975pt.
- [19 <./business_no1_details.png>] [20 <./eco_no1_details.png>] [21] [22] 
+ [19 <./business_no1_details.png>] [20 <./eco_no1_details.png>] [21] [22] [23] 
 enddocument/afterlastpage (AED): lastpage setting LastPage.
 (Report.aux)
  ***********
@@ -478,15 +483,15 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  4423 strings out of 467392
  71098 string characters out of 5415748
- 498936 words of memory out of 5000000
+ 498924 words of memory out of 5000000
  33698 multiletter control sequences out of 15000+600000
  671828 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  65i,12n,67p,561b,425s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on Report.pdf (23 pages, 911242 bytes).
+Output written on Report.pdf (24 pages, 915004 bytes).
 PDF statistics:
- 165 PDF objects out of 1000 (max. 8388607)
+ 168 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  66 words of extra memory for PDF output out of 10000 (max. 10000000)
 
