@@ -53,7 +53,7 @@ from five fictional bus companies. Its purpose is to simplify journey selection 
 filtering unsuitable offers and ranking the remaining options according to individual user's priorities.
 
 Comparing bus offers can be difficult because the cheapest ticket is not necessarily the best choice. 
-Differences in journey duration, departure times, transfers and ticket flexibility 
+Differences in journey duration, departure times, transfers, and ticket flexibility 
 can significantly affect an offer's value in the eyes of a user. An additional problem is that very few users will agree 
 on what matters most for a trip to be worthwhile.
 
@@ -64,18 +64,18 @@ travellers identify the most suitable journey based on their requirements and pr
 
 The application detailed throughout this report attempts to achieve this object by:
 \begin{itemize}[nosep]
-\item loading and validating travel offers, 
-\item removes those that do not meet hard constraints set by users, 
-\item scores the remaining offers using a weighted ranking model set forth by individual users, 
-\item presents explainable recommendations,
-\item support simulated bookings for multiple users.
+\item loading and validating Trip data
+\item removing Trips that do not meet hard constraints set by users
+\item scoring the remaining offers using a weighted ranking model set forth by individual users
+\item presenting explainable recommendation
+\item supporting simulated bookings for multiple users
 \end{itemize}
 
 The application uses a modular, object-oriented Python design to separate functional responsibilities 
-such as data management, validation, filtering, scoring and booking. 
-A weighted scoring model allows different criteria to be normalised and combined into a comparable score. 
-This scoring and its composition is accessible to be able to reference outside of internal objects and be used to 
-explain ranking to users.
+such as data management, validation, filtering, scoring, and booking. 
+A weighted scoring model allows different criteria to be normalised and combined into a measurable score. 
+This scoring and its composition is created in a way that isaccessible and can be referenced outside of internal objects in a way that allows 
+explanation of ranking to users.
 
 An important consideration in this applications design is Hard versus Sorft Constraints. 
 Hard constraints determine whether an offer is acceptable and 
