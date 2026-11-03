@@ -389,7 +389,7 @@ def create_app(planner, loaded_count):
             raw_values = request.args.to_dict(flat=False)
             query, errors = planner.parse_search(raw_values)
             results = planner.find_trips(**query) if not errors else None
-            weighted_results = user.hierarchy.score(results)
+            weighted_results = user.hierarchy.score(results)[:6]
 
         return render_template(
             "user_search.html",

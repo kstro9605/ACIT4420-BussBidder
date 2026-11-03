@@ -105,21 +105,19 @@
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Match</th><th>Offer</th><th>Company</th><th>Destination</th><th>Date</th>
-                  <th>Departs</th><th>Arrives</th><th>Price</th><th>Seats</th></tr>
+                <tr><th>Match</th><th>Company</th><th>Destination</th><th>Date</th>
+                  <th>Departs</th><th>Price</th></tr>
               </thead>
               <tbody>
                 {% for score, trip in results %}
                 <tr>
-                  <td>{{ '%.2f'|format(score) }}</td>
-                  <td>{{ trip.trip_id }}</td>
+                  <td>{{ '%.2f'|format(score.score_value) }}</td>
                   <td>{{ trip.trip_company }}</td>
                   <td>{{ trip.trip_destination }}</td>
                   <td>{{ trip.trip_date.isoformat() }}</td>
                   <td>{{ trip.departure_time.strftime('%H:%M') }}</td>
-                  <td>{{ trip.arrival_time.strftime('%H:%M') }}</td>
                   <td>€{{ '%.2f'|format(trip.trip_price) }}</td>
-                  <td>{{ trip.seats_available }}</td>
+                  <td><a href="{{ url_for('show_details', detail_view=trip.trip_id, priority_minded='true') }}" target="_blank" rel="noopener noreferrer">Trip Details</a></td>
                 </tr>
                 {% endfor %}
               </tbody>
