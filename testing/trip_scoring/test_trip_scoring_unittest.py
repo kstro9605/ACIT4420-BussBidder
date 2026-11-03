@@ -18,8 +18,8 @@ class TestTripScoring(unittest.TestCase):
         self.user = User(username="testuser", name="Test User", password="password", email="testuser@example.com")
         hierarchy = Hierarchy()
         hierarchy.add_priority(Priority(PriorityType.LOWER_PRICE, 30))
-        hierarchy.add_priority(Priority(PriorityType.DEPARTURE_BEFORE, 20, qualifier=Qualifier(QualifierOperator.EARLIER_THAN, datetime.time(12, 0))))  # Example: Departure before 12 PM
-        hierarchy.add_priority(Priority(PriorityType.ARRIVAL_BEFORE, 20, qualifier=Qualifier(QualifierOperator.EARLIER_THAN, datetime.time(18, 0))))  # Example: Arrival before 6 PM
+        hierarchy.add_priority(Priority(PriorityType.DEPARTURE_BEFORE, 20, qualifier=Qualifier(QualifierOperator.EARLIER_THAN, datetime.time(12, 0)))) 
+        hierarchy.add_priority(Priority(PriorityType.ARRIVAL_BEFORE, 20, qualifier=Qualifier(QualifierOperator.EARLIER_THAN, datetime.time(18, 0)))) 
         hierarchy.add_priority(Priority(PriorityType.DURATION, 10))
         hierarchy.add_priority(Priority(PriorityType.FEWER_TRANSFERS, 10))
         self.user.hierarchy = hierarchy
