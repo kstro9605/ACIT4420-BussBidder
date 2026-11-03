@@ -10,9 +10,10 @@
 \contentsline {section}{\numberline {5}Searching, Filtering, and Scoring Methodology}{6}{}%
 \contentsline {subsection}{\numberline {5.1}Searching and Filtering Trip data}{6}{}%
 \contentsline {subsection}{\numberline {5.2}Weighted Ranking Methodology}{6}{}%
-\contentsline {subsubsection}{\numberline {5.2.1}Code implementation}{8}{}%
+\contentsline {subsubsection}{\numberline {5.2.1}Example scoring}{7}{}%
+\contentsline {subsubsection}{\numberline {5.2.2}Scoring Implementation in this program}{8}{}%
 \contentsline {section}{\numberline {6}Web Interface and Booking Functionality}{9}{}%
 \contentsline {section}{\numberline {7}Testing and Experimental Results}{10}{}%
 \contentsline {section}{\numberline {8}Traveller Profile Comparisons}{12}{}%
 \contentsline {section}{\numberline {9}Critical Evaluation and Limitations}{20}{}%
-\contentsline {section}{\numberline {10}AI Declaration of Use}{22}{}%
+\contentsline {section}{\numberline {10}AI Declaration of Use}{21}{}%

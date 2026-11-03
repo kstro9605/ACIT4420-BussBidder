@@ -84,6 +84,18 @@ class Binary(EvaluationMethod):
             case _:
                 return 1.0
 
+class QualifierOperator(Enum):
+    LESS_THAN = "less_than"
+    MORE_THAN = "more_than"
+
+    EARLIER_THAN = "earlier_than"
+    LATER_THAN = "later_than"
+
+@dataclass
+class Qualifier:
+    operator: QualifierOperator
+    value: Any
+
 
 class PriorityType(Enum):
     LOWER_PRICE = "trip_price", Comparative, "lower_price"
@@ -103,23 +115,6 @@ class PriorityType(Enum):
         self.field_name = field_name
         self.evaluator_class = evaluator_class
         self.key = key
-
-class QualifierOperator(Enum):
-    LESS_THAN = "less_than"
-    MORE_THAN = "more_than"
-
-    EARLIER_THAN = "earlier_than"
-    LATER_THAN = "later_than"
-
-@dataclass
-class Qualifier:
-    operator: QualifierOperator
-    value: Any
-
-
-class MissingQualifierForTimeframe(ValueError):
-    pass
-
 
 @dataclass
 class Priority:
@@ -171,3 +166,5 @@ class Priority:
                     qualifier=self.qualifier,
                 ) * self.weight
         
+class MissingQualifierForTimeframe(ValueError):
+    pass
