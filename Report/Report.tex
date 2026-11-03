@@ -48,23 +48,46 @@
 \newpage
 
 \section{Introduction}
-- Introduce BusBidder Spain and its purpose.
+BusBidder Spain is a simulated bus-booking marketplace that allows users to compare offers 
+from five fictional bus companies. Its purpose is to simplify journey selection by 
+filtering unsuitable offers and ranking the remaining options according to individual user's priorities.
 
-- Explain the problem of comparing competing bus offers.
+Comparing bus offers can be difficult because the cheapest ticket is not necessarily the best choice. 
+Differences in journey duration, departure times, transfers and ticket flexibility 
+can significantly affect an offer's value in the eyes of a user. An additional problem is that very few users will agree 
+on what matters most for a trip to be worthwhile.
 
-- Establish the objective: personalized filtering and weighted ranking of journeys.
+BusBidder's main objective is to provide personalised filtering and a weighted ranking system,  that will help
+travellers identify the most suitable journey based on their requirements and priorities.
 
-- Briefly summarize the application's functionality.
-
-\newpage
 \section{Requirements and Problem Interpretation}
-- Identify the main functional requirements.
 
-- Explain key design assumptions and decisions.
+The application detailed throughout this report attempts to achieve this object by:
+\begin{itemize}[nosep]
+\item loading and validating travel offers, 
+\item removes those that do not meet hard constraints set by users, 
+\item scores the remaining offers using a weighted ranking model set forth by individual users, 
+\item presents explainable recommendations,
+\item support simulated bookings for multiple users.
+\end{itemize}
 
-- Distinguish mandatory requirements from user preferences.
+The application uses a modular, object-oriented Python design to separate functional responsibilities 
+such as data management, validation, filtering, scoring and booking. 
+A weighted scoring model allows different criteria to be normalised and combined into a comparable score. 
+This scoring and its composition is accessible to be able to reference outside of internal objects and be used to 
+explain ranking to users.
 
-- Summarize how the implementation addresses the assignment.
+An important consideration in this applications design is Hard versus Sorft Constraints. 
+Hard constraints determine whether an offer is acceptable and 
+can be set as a hard constraint by the user on any field given such as destination, travel dates, budget and seat availability. 
+Preferences, such as lower prices, shorter journeys, convenient departure times and ticket flexibility, 
+can be Soft constraints left to the user to decide if the influence the ranking 
+but do not automatically exclude an offer from being listed.
+
+
+BusBidder attempts to address the aforementioned requirements through a modular application that processes travel data, 
+validates its quality, applies mandatory filtering and ranks suitable offers using configurable priorities. 
+The resulting recommendations aim to be transparent, consistent, and adaptable to different user profiles.
 
 \newpage
 \section{System Architecture and Software Design}
@@ -435,16 +458,41 @@ in this example we see the value in the design desicion of adding this weighted 
 
 \newpage
 \section{Critical Evaluation and Limitations}
-- Identify the application's main strengths.
+The application gains many positive attributes through several design decisions. As a basis for this kind of problem and use case, a web interface makes the most sense
+as it is the most intuitive means for a user to browse trips and details and store information about them selves. It is the most familiar format and as such requires
+little explanation on how to use the program. Secondly the decision to take certain priorities a user might have and allow them to be weighted allows 
+for a more personalized service. As mentioned above, A user would be able to find appropriate trips on their own with a table that allows them to filter on things 
+like Prices, Duration, customer rating, etc. on a scale of low to high or High to low. or a hard check for things like refundability. 
+This approach however only takes one or two things into consideration. The weighted approach as demonstrates a more indepth application that can show a trip 
+that aligns the most across all of the areas a user cares about. this applications design implementation also is modularized enough that future modifications 
+would be trivial to add, like if a new administrator wanted to be able to add a new priority the framework exists in such a state that it would only need to be 
+updated in the priority objects code and then in the front end. Everything else that interacts with this data is generalized enough that it will accept new data 
+if structured in those two places.
 
-- Discuss technical limitations and design trade-offs.
+This application is, however, limited in a few aspects. Because We are reading in data from a fixed CSV file, our breadth of trip complexity is limited to what is 
+put into that file, and with it being fixed it will eventually be unusable due to Dates being passed. The scoring also leaves its results as a floating value that 
+can technically lead to ties, and it was intentionally decided that a floating point value of 2 decimal places would be sufficient scoring as the user should be 
+able to look at two trips with the exact score and be able to determine on the extra information given by the details page what would be a tie breaker for 
+themselves and accounting for that programmatically would weigh down the user experience and make possibly incorrect assumptions. In it's current state, 
+the established priority system may leave a priority that matters to a user unavailable. While this could be remedied by adding more and more priorities to the list, 
+it was decided for this project that the given priorities would be sufficient also considering the user could manually query the data with anything else that data 
+in a file may contain.
 
-- Evaluate scoring assumptions and normalization.
+The Scoring and normalization is fairly robust in it's implementation but there are some decisions made that don't necessarily fit with the current data set. 
+A prime example of this is that we currently score a priority of low number of transfers in a comparative evaluation methodology. 
+In our dataset, trips only have 0 or 1 transfers which would work in a binary evaluation; however, it was a measured decision that it was possible 
+for someone running the program to feed the application data with many transfers, and in that case a binary approach would be insufficient. 
 
-- Discuss potential unfair outcomes and unintended biases.
-
-- Identify possible improvements and future development.
-
-- Reflect on challenges and lessons learned.
+In deciding to also allow a user to set their own priorities we have also introduced a source of bias that while technically correct may come across as an insufficient 
+solution. Assume a user has low carbon impact as a priority and low price as another and has weighed low carbon impact higher than price. 
+They may see results returned for trips that all seem to have the similar impact but one being slightly lower, 
+while another with a significantly lower price then the rest of the trips that has an average impact. 
+How would a user want these results ranked? In this implementation an outlier in lower prices may actually counter weigh the apparent carbon impact 
+as it will significantly reduce the average pointing of trips because the price priority is getting much smaller portions of points to the point where the second lower 
+price is getting significantly less points then a person looking at it would decide to award it. 
+A solution to this could be that every data point now has to look at the average distribution of values and adjust the normalization irrespective of outliers, 
+but is that a better solution? It is possible some users would prefer outliers to have a heavier impact in what is returned. The problem has several solutions 
+but there is no definitive correct path forward, and it is up to the applications design decisions to determine the best path forward; and in this case, 
+I have decided that an outlier should cause a bit of trouble as that is probably what the trip providers is probably hoping will happen.
 
 \end{document}
