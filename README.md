@@ -6,7 +6,86 @@ Final class assessment for ACIT4420 Kyle Strother Student Number: 416279
 
 BussBidder is a python backend project with a flask web application for browsing comparing and booking bus trips. Users can search trips by details such as destination, travel date, price, transfers, and available seats. Registered users can set their own priorities and save the weights associated with validation keeping it scored correctly. They can also see trips ranked against those preferences with a score out of 100 points on how much a trip matches their preferences, manage their account theme, and book tickets and see what they've booked. 
 
-Trip data is loaded from a CSV file at startup. This data is provided and was originally drafted by AI to have consistent timing and accurate pricing. Each row is validated before it is added to the application's trip planner, Invalid rows are skipped and they're given a reason for rejection, these messages are written to `error.output`. 
+Trip data is loaded from a CSV file at startup. **It is important to note that the data used in this file only exists in the time frame of 2027-11-03 and 2027-11-09** This data is provided and was originally drafted by AI to have consistent timing and accurate pricing. Each row is validated before it is added to the application's trip planner, Invalid rows are skipped and they're given a reason for rejection, these messages are written to `error.output`. 
+
+## Installation
+
+### Prerequisites
+
+- Python 3.10 or newer.
+- pip for installing dependencies
+- Flask 3.x
+
+### Steps
+
+1. Clone the repository and change into the project directory:
+
+   ```bash
+   git clone https://github.com/kstro9605/ACIT4420-BussBidder.git
+   cd ACIT4420-BussBidder
+   ```
+
+2. Install the required package:
+
+   ```bash
+   python -m pip install -r data/requirements.txt
+   ```
+
+3. Start the application from the project directory:
+
+   ```bash
+   python main.py
+   ```
+
+4. Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in a browser.
+
+## Using Busbidder
+
+In the webpage [http://127.0.0.1:8000](http://127.0.0.1:8000), You will find yourself at an index page allowing you to decide to either create a user or simply search for trips given user defined parameters.
+
+![Index Page](data/bussbidder_index.png)
+
+There is no validation needed when creating a user for this demonstration so feel free to use a fake email such as fake@email.com when creating a user.
+
+![Login Page](data/bussbidder_login.png)
+
+After registering you will be brought to a profile management page where you can change your login information as well as set a custom theme that is consistent across all pages of the project. You will also be able to set the priorities for this user. You can do this two ways if on a computer and your browser supports click and drag, you can click and drag a priority to the right to add it to the pie chart. If not you can also just hit the add button next to the priority. You can then modifiy the priorities weights by either sliding the scales to reduce the points so more open for other priorities or enter the values in the priorities text boxes. You will not be able to set a priority's weight higher than what is available out of 100 points so to increase one you will have to decrease another/others. 
+
+![Profile Management Page](data/bussbidder_prioritizing.png)
+
+To match the budget travelers profile mention in the project report add the Lower Price, Departure After, and Flexible priorities and weigh them at 50, 10, and 40 points respectively. Once those priorities have been set you must hit the Save Priorities button at the bottom of the page.
+
+![Budget Profile Priorities](data/bussbidder_report_prior.png)
+
+From here you can select the "Back to trip search" link at the top of the page bringing you to the programs main search page. On this page you may fill out all or even none of the fields to find trips. in the Company and Destination fields you can select multiple entries by holding the control `crl` key on your keyboard as you click the entries in the list. **Only dates in the time frame of 2027-11-03 and 2027-11-09 exist in the data, so if you enter a date it must be in that range otherwise no trips will be returned** Once you have filled in the data you want you can now display all trips matching those constraints, and if you are logged in and have set your priorities as mentioned above you can display a ranked search with scores of the trips matched to your query. To match the Budget Traveller's results from the report we will only select the "Flexible Date range" check box and enter the date range of 11-04-2027 to 11-07-2027 and select "Search Trips Ranked by your Priorities" button. This should return 71 Trips and give you a few details including the score given to this trip.
+
+![Budget Profile Results ](data/bussbidder_report_results.png)
+
+As you scroll down the page you will be able to view all trips that match the date constraint set above and you have the ability to view more details of each trip and book trips. To match the report we will select the first trip with Offer id of OF042 and view its details.
+
+![Budget Profile Winner](data/bussbidder_report_winner.png)
+
+Here you can see the breakdown of how this trip scored against the priorities the user has set. Next we will book this trip, keep note of the number of seats available being 16 for this specific trip. Click the "Book Trip" Text. Here we can enter any number of seats to book up to the number available. Once that information is entered click book tickets. 
+
+![Budget Profile booking](data/bussbidder_report_booking.png)
+
+After clicking to book you will get a confirmation that the booking has been made and you will also be able to see that the number of seats was reduced by the number of seats you booked. This is maintained in the data so it is visible in any page that has this trips details available. 
+
+![Budget Profile Confirmation](data/bussbidder_report_confirmation.png)
+
+You can now also go back to the profile management page to see all the trips this user has booked.
+
+![Budget Profile Confirmation in Profile](data/bussbidder_report_account_book.png)
+
+The booking information, Registered users, and error output are all also readable on the system in the directory where this program is run from under the files: `registered_users.csv`, `active_bookings.csv`, and `error.output`
+
+## Running Tests
+
+From the project directory, run:
+
+```bash
+python -m unittest testing.data_loading.test_dataLoader_unittest testing.trip_scoring.test_trip_scoring_unittest
+```
 
 ## Project Structure
 
@@ -237,42 +316,3 @@ using this methodology We can determine the scoring of each trip given a users l
 - Booking records are appended to `active_bookings.csv` in the directory from which the application is run. These are also accessible in the web interface if a user logins in as the built in admin user `admin@bb_admin.com` with the built in password `HugeSecurityRisk` Because there are no other admin controls added this is an okay approach to show bookings in page as it doesnt contain any sensative information, and the scope of this assignment did not necessitate user controls on this scale.
 - `registered_users.csv` is regenerated when an authenticated user opens or submits the account management page. It contains user names, emails, themes, priorities, and booking IDs.
 - The account and booking setup is intended for a course project/demo, and as such security behaviors are much more relaxed.
-
-## Installation
-
-### Prerequisites
-
-- Python 3.10 or newer.
-- pip for installing dependencies
-- Flask 3.x
-
-### Steps
-
-1. Clone the repository and change into the project directory:
-
-   ```bash
-   git clone https://github.com/kstro9605/ACIT4420-BussBidder.git
-   cd ACIT4420-BussBidder
-   ```
-
-2. Install the required package:
-
-   ```bash
-   python -m pip install -r data/requirements.txt
-   ```
-
-3. Start the application from the project directory:
-
-   ```bash
-   python main.py
-   ```
-
-4. Open [http://127.0.0.1:8000](http://127.0.0.1:8000) in a browser.
-
-## Running Tests
-
-From the project directory, run:
-
-```bash
-python -m unittest testing.data_loading.test_dataLoader_unittest testing.trip_scoring.test_trip_scoring_unittest
-```
